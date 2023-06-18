@@ -1,488 +1,1366 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
+  <meta charset="utf-8">
+  
+  
+  <title>Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://nevereatsoldierlines.github.io/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:locale">
+<meta property="article:author" content="SUNHAT">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
 
+  
+  
+<link rel="stylesheet" href="/css/style.css">
 
-    <title>SunNovel</title>
-    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
-    <meta content="website" property="og:type">
-    <meta content="SunNovel" property="og:title">
-    <meta content="http://nevereatsoldierlines.github.io/index.html" property="og:url">
-    <meta content="SunNovel" property="og:site_name">
-    <meta property="og:locale">
-    <meta content="SUNHAT" property="article:author">
-    <meta content="summary" name="twitter:card">
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
 
-    <link href="/atom.xml" rel="alternate" title="Hexo" type="application/atom+xml">
+  
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
 
-
-    <link href="/favicon.png" rel="shortcut icon">
-
-
-    <link href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css" rel="stylesheet">
-
-
-    <link href="/css/style.css" rel="stylesheet">
-
-
-    <link href="/fancybox/jquery.fancybox.min.css" rel="stylesheet">
-    <script src="js/axios.min.js"></script>
-    <script>
-        function LoginByUser() {
-            const userId = document.getElementById("userId").value;
-            alert(userId)
-            const pwd = document.getElementById("pwdForLogin").value;
-            alert(pwd)
-            Login(userId,pwd);
-        }
-        function Login(userId,pwd){//测试成功
-            alert(userId);
-            alert(pwd)
-            axios.get("https://123.207.20.152:5666/api/User/Login?userId="
-                +userId+"&password="+pwd)
-                .then(res => {
-                    console.log(res.data)
-                    alert(res.data)
-                    if (res.data[0] === 5001){
-                        localStorage.setItem("userId",userId)
-                        localStorage.setItem("username",res.data[1])
-                    }
-                    document.getElementById("userId").value=""
-                    document.getElementById("pwdForLogin").value="";
-                })
-                .catch(err => {
-                    console.error(err);
-                    alert(err)
-                })
-        }
-        function PublishComment() {
-            const content = document.getElementById("content").value;
-            var chapterId = document.getElementById("chapterId").value;
-            if (chapterId.length===0||chapterId===null){
-                chapterId = 0;
-            }
-            const userId = (localStorage.getItem("userId")===null||localStorage.getItem("userId").length===0)?4:localStorage.getItem("userId")
-            axios.get("https://123.207.20.152:5666/api/User/PublishComment?userId="
-                +userId+"&content="+content+"&chapterId="+chapterId)
-                .then(res => {
-                    alert(res.data)
-                    const table = document.getElementById("commentPlace");//找到表格
-                    const tr = document.createElement('tr');//创建行
-                    const chapterIndex = document.createElement("td");//创建列
-                    chapterIndex.innerText = chapterId;
-                    const username = document.createElement("td");
-                    username.innerText= localStorage.getItem("username");
-                    
-                    const commentContent = document.createElement("td");
-                    commentContent.innerText = content;
-                    chapterIndex.innerText="第"+chapterId+"章";//往新建的列添加数据
-                    tr.appendChild(chapterIndex)
-                    tr.appendChild(username)
-                    tr.appendChild(commentContent)
-                    table.appendChild(tr);
-                    document.getElementById("content").value=""
-                    document.getElementById("chapterId").value=""
-                })
-                .catch(err => {
-                    console.error(err);
-                })
-        }
-
-        function addUser() {
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-            if (username===null||username.length===0||password===null||password.length===0){
-                alert("若要注册，密码与用户名都不允许为空！")
-            }
-            axios.get("https://123.207.20.152:5666/api/User/AddUser?username="+username+"&password="+password)
-                .then(res => {
-                    console.log(res.data)
-                    if (res.data[0]===3001){
-                        alert("您的用户id是："+res.data[1]+"，此后登陆请使用该ID");
-                        Login(res.data[1], password);
-                        document.getElementById("username").value=""
-                        document.getElementById("password").value=""
-                        return
-                    }
-                    alert(res.data[1])
-                })
-                .catch(err => {
-                    console.error(err);
-                })
-        }
-        function init(){
-            localStorage.setItem("userId", (localStorage.getItem("userId")===null||localStorage.getItem("userId").length===0)?4:localStorage.getItem("userId"));
-            localStorage.setItem("username",(localStorage.getItem("username")===null
-                ||localStorage.getItem("username").length===0)
-                ?"匿名用户":localStorage.getItem("username"));
-
-            const table = document.getElementById("commentPlace");//找到表格
-            const tr = document.createElement('tr');//创建tr
-
-            const chapterId = 0;
-            axios.get("https://123.207.20.152:5666/api/User/GetComments?chapterId="+chapterId)
-                .then(res => {
-                    for (let i = 0; i<res.data.length; i++){//这种就没问题
-                        const tr = document.createElement('tr');//创建行
-                        const chapterIndex = document.createElement("td");//创建列
-                        
-                        const username = document.createElement("td");
-                        username.innerText= res.data[i]["Username"]
-                        const content = document.createElement("td");
-                        content.innerText = res.data[i]["Content"]
-                        chapterIndex.innerText="第"+res.data[i]["ChapterId"]+"章";//往新建的列添加数据
-                        
-                        tr.appendChild(chapterIndex)
-                        tr.appendChild(username)
-                        tr.appendChild(content)
-                        table.appendChild(tr);
-                        //向表格里添加行
-                        // tr.appendChild(comment)
-                        // tr.appendChild(chapter);//向表格新建的行添加列
-                    }
-                    
-                })
-                .catch(err => {
-                    alert("加载评论出错")
-                    console.error(err);
-                })
-            
-        }
-    </script>
-
-    <meta content="sunNovel" name="generator">
-</head>
-
-<body onload="init()">
-<div id="container">
+<body>
+  <div id="container">
     <div id="wrap">
-        <header id="header">
-            <div id="banner"></div>
-            <div class="outer" id="header-outer">
-                <div class="inner" id="header-title">
-                    <h1 id="logo-wrap">
-                        <a href="/" id="logo">Hexo</a>
-                    </h1>
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"><span class="fa fa-bars"></span></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+        
+          <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
+        
+        <a class="nav-icon nav-search-btn" title="Search"><span class="fa fa-search"></span></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://nevereatsoldierlines.github.io"></form>
+      </div>
+    </div>
+  </div>
+</header>
 
-                </div>
-                <div class="inner" id="header-inner">
-                    <nav id="main-nav">
-                        <a class="nav-icon" id="main-nav-toggle"><span class="fa fa-bars"></span></a>
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-chapter34" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/06/18/chapter34/" class="article-date">
+  <time class="dt-published" datetime="2023-06-18T10:15:58.000Z" itemprop="datePublished">2023-06-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/06/18/chapter34/">第三十四章 角色扮演</a>
+    </h1>
+  
 
-                        <a class="main-nav-link" href="/">Home</a>
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>苏岚抬起手抚摸脖子上那颗凸起的喉结，沉醉般呻吟着回应道：“啊～爽。”</p>
+<p>“爽就叫起来！”陆宇恒紧箍的情欲在⾃⼰的阴茎在苏岚紧致逼仄的肉穴内剧烈摩擦后，如喷溅在苏岚后穴里的精液一般冲出精囊，他开始用狂悖的语气说着刺激二人性欲的污言秽语：“你不是最喜欢⽼公操你的屁股了吗？嗯？”</p>
+<p>说着，陆宇恒⼿上的动作也不停歇，在苏岚那颗顶⽴在右胸⼝上的乳头不重不轻地掐了⼀下。</p>
+<p>“呃……啊～”苏岚被冷不丁地掐了一下乳头，条件反射一般全身轻颤，嘴角溢出淫荡的呻吟。</p>
+<p>见他好久不回答，陆宇恒俯下身，亲吻他那被汗湿的脸庞，勾起唇角问：“怎么不说话了？嗯？喜不喜欢老公插你？”</p>
+<p>说着，他又突然摆了一下胯，硬挺的性器猛戳了一下苏岚被操得松软的后穴，不等苏岚求饶就开始了大幅度的抽插。</p>
+<p>苏岚的身体被顶撞得在床单上前后颠簸，身下那一片被单被来回挤得皱缩起来，他的身体随着陆宇恒抽插的动作不断律动，全身的肌⾁也被后穴处猛烈的抽插和穴内强烈的快感刺激得一紧一弛，甚至连身上的肌肉都被干得颤抖起来。他回应着陆宇恒的强硬：“是，我最喜欢⽼公插我了。”</p>
+<p>说完这句话，苏岚为自己刚刚淫荡的话语感到羞愧，脸上又添了一抹由羞耻感带来的潮红，不由自主地紧绷起身体。</p>
+<p>陆宇恒感到后⽳收缩了⼀点，在苏岚体内的阴茎的律动变得困难不少，但是每动⼀下都能感到更刺激的快感。</p>
+<p>“你太棒了，宝贝！”陆宇恒捉住苏岚的脚踝，把他的腿架在⾃⼰的肩膀上，命令道：“来，夹住，夹住我的脖⼦！”</p>
+<p>在性爱中的命令之语让全身赤裸，被征伐侵略的苏岚更觉羞耻，快感也随着羞耻的扩散而遍布全身。</p>
+<p>苏岚尽力绷紧了已经无力的双腿，两只脚绞在⼀起，套牢在陆宇恒的脖颈后。</p>
+<p>陆宇恒⼤⼒冲撞，苏岚后⽳被捣得发痛，可是⽐痛更持久、更深⼊的是⽆限的快感。苏岚⼀边痛得紧闭双眼，⼀边被快感刺激得呻吟之语不断从⼝中溢出。</p>
+<p>“⽼公，再快点！操死我！”</p>
+<p>陆宇恒⼤概知道了苏岚做爱时的快感来源不仅来⾃于后⽳被冲击和肉体被抚慰这样的感官刺激，更来自被命令、羞辱时的心理刺激，于是他⼤⼒拍了⼀下苏岚正紧绷的浑圆挺翘的臀部，在上面捏了一把，开始了⻆⾊扮演：“不许命令我！听⻅没！”</p>
+<p>果然，苏岚被狠狠打了⼀下后反⽽更加兴奋，他紧绷着身体，呻吟着扭动腰肢，“委屈”地说：“知道了。”</p>
+<p>陆宇恒将苏岚从床上拽起，冷不丁地将他的腿抬到⾃⼰的肩膀处，乍然俯身，苏岚修长的双腿几乎要被叠到紧贴上身，幸好苏岚的身体韧劲够，并没有因此受伤。</p>
+<p>陆宇恒开始玩起来⻆⾊扮演，命令起苏岚：“⾃⼰张开腿，腿张开！”</p>
+<p>苏岚红着脸照做，⾼⾼抬起腿，白皙的脸因为刚刚被大肆征伐遗留下的快感、被命令时的极度羞耻感和房间内的暖⽓烘得绯红。</p>
+<p>苏岚感觉羞耻万分，将脸埋进腿间，双腿合起。</p>
+<p>⻅他没按照自己的要求做，陆宇恒朝着他的屁股狠狠打了⼀巴掌，将⾃⼰在性爱中强势的⻆⾊扮演到底：“腿张开！不准把脸埋进去！听⻅没！”</p>
+<p>“听⻅了，”苏岚慢慢抬起头，张开腿，“我错了，不会了……”</p>
+<p>陆宇恒贴着苏岚的腿，刚刚⼏乎快要从苏岚的⾁⽳⾥分离出来的硬物⼜⼀次捣进苏岚的体内。苏岚被这强烈的冲击冲得失去了理智，他后⽳紧缩，眼睛紧闭，嘴中溢出呻吟之词：“啊，哦～操！”</p>
+<p>“你想操谁？”陆宇恒⼜朝着苏岚屁股上打了⼀巴掌，命令道：“不准说‘操’，听⻅了吗？”</p>
+<p>“唔，唔，听⻅了，我不说了。”苏岚被陆宇恒强硬的态度激起深藏于⼼底的肮脏的性欲，断断续续地吐着凌乱的⽓息，呻吟着⼸起身⼦，被强烈的羞辱感刺激得不断收缩的肠道紧箍着陆宇恒捣⼊他后⽳的鸡巴。</p>
+<p>陆宇恒感到⾃⼰的⽼⼆被⽳内柔韧的肠肉裹得严严实实，稍微动了⼀下，就感到阻⼒⽐之前显然⼤了不少，他激动地拎起苏岚的脚踝，将他双腿撇开，⻓⻰直⼊，⼤⼒冲击。</p>
+<p>苏岚被后⽳处剧烈的摩擦，前列腺那块突起被不断顶撞带来的双重快感席卷全身，他张开嘴，⼤⼝呼吸，欲念从嘴中喷薄⽽出：“⽼公，快⼲死我！”</p>
+<p>“不许喊⽼公！”为了给双方带来最极致的快感，陆宇恒也只能先扮演强势的角色，等做完再给苏岚好好道歉，“我不喜欢我操你的时候你喊我老公，喊主⼈，听⻅没有！”</p>
+<p>说着，他拿着⾃⼰脱在旁边的⽪带不重不轻地抽了几下苏岚的挺翘的屁股，然后继续摆动胯部，在苏岚体内征伐袭虐。</p>
+<p>陆宇恒下手不算重，但是那种被奴役的羞辱感却让苏岚的全身痉挛。</p>
+<p>不⼀会，苏岚身前那根硬挺的鸡巴就在被命令羞辱的羞耻感、臀部强烈痛感的刺激、⼤腿与勃起的阴茎之间不断摩擦的三重快感的共同刺激之下激得抽搐起来，⼀晃⼀晃地颤动。那⾥的顶端也随着颤动吐露出稀薄的精液，薄薄地覆盖了整根阴茎。</p>
+<p>苏岚正体验⾃⼰再次射精的快感，已经红了的臀部却⼜被狠狠一击——是陆宇恒，他⼜朝着那⾥打了⼀巴掌，这次是⽤⼿。</p>
+<p>“呃……”⼀阵羞耻感和快感再度席卷⽽来，呻吟之声从⼝中溢出，苏岚并不觉得那⾥有多疼，显然陆宇恒并没有⽤⼒，只是在尝试更多花样。</p>
+<p>“不准⾃⼰爽，回过神！听⻅了吗？回答主⼈⼀个问题，你的任务是什么？”陆宇恒拿起⽪带问。</p>
+<p>苏岚思考着，并不知道陆宇恒想要的答案是什么，也并没有回答。</p>
+<p>“快说！”陆宇恒命令。</p>
+<p>“是。”苏岚快速在脑⼦⾥回忆以前看过的类似的淫秽出版物，但那些书确实没有告诉过苏岚该怎么回答这个问题，于是他实话实说：“主⼈，我也不知道。”</p>
+<p>“是让主⼈⾼兴，听⻅了吗？”陆宇恒憋着笑，又朝他红透了的屁股蛋上重重地打了一巴掌。</p>
+<p>第⼀次和苏岚玩这种⻆⾊扮演，没想到还挺有意思。</p>
+<p>“听⻅了。”苏岚委曲求全地说，⿐⼦已经开始抽动。</p>
+<p>“那还不快动起来？”陆宇恒拔出巨根，躺倒床上，头垫在软枕上，拍了拍⾃⼰的⼤腿，示意他坐上来给⾃⼰服务。</p>
+<p>苏岚忍着哭腔，坐到陆宇恒⼤腿上，弯下腰，张嘴含下陆宇恒那根还未清理的鸡巴，撩开散落在额前的被汗液浸湿的头发，给他⼝交。</p>
+<p>⼀坐到陆宇恒那个肌⾁紧致，腿⽑细密的⼤腿上，苏岚屁股上那块被打了⼏下，本就敏感的红肿处就像被针扎了⼀样，⼜痛⼜爽。</p>
+<p>苏岚忍着痛意，闭上眼睛，弯下腰，⽤⾆尖在⼝腔外轻轻挑逗陆宇恒的鸡巴，在那个硬挺的阳物上慢慢舔舐。</p>
+<p>先是茎柱，然后是那根巨物下⿎⿎囊囊的阴囊，苏岚⽤轻微的挑逗让那个阴囊⾥的卵蛋被⾃⼰的⾆尖不停驱动，在阴囊⾥来回游荡。</p>
+<p>陆宇恒将手伸到苏岚屁股上，刚准备打下去，就看⻅那⾥已经通红，实在不忍心再打一巴掌，于是在上面揉了揉，慢慢将⼿移到苏岚结实的胸肌上，拧了⼏下那⾥凸起的乳粒。</p>
+<p>待苏岚⼝中呻吟之声溢出⼝，停下了嘴⾥的动作，陆宇恒⼜重重拍了⼀下苏岚的胸肌，那里鼓起的肌肉被这一巴掌打得轻轻颤了起来。</p>
+<p>苏岚刚刚还在给陆宇恒口交，乍然被打了一巴掌，虽然并不觉得这一巴掌有多痛，但⽬前还在⻆⾊扮演中，于是含着那个鸡巴，故作委屈地问：“主⼈，怎么了？”</p>
+<p>陆宇恒厉声道：“不许舔我的屌，吞下去！听⻅了吗？”</p>
+<p>苏岚说了⼀声“遵命”，就将那根巨物尽力含进嘴⾥，让那根鸡巴在自己嘴⾥直捣⻓⻰，不断变换着位置搅动自己的⼝腔。</p>
+<p>陆宇恒本就有射精的想法，加上苏岚⾆头和⽛⻮的挑逗，在苏岚嘴⾥不过⼗分钟，他就再次射了出来。</p>
+<p>“不许吐出来！含进去！”陆宇恒命令道。</p>
+<p>苏岚点了点头，被命令的羞耻感让他脸上潮红。</p>
+<p>他闭上眼睛，嗦了两下陆宇恒正在他口中射精的阴茎。</p>
+<p>苏岚⼊戏太深，在陆宇恒射完之后，他跪在床上，问：“主⼈，需要我把这些精液吞进去吗？”</p>
+<p>陆宇恒壮起了胆，命令道：“给我吞进去。”</p>
+<p>“遵命。”说着，苏岚忍着腥涩的⼝感，吞咽了⼏⼝，将嘴⾥⼤部分精液咽进胃⾥。</p>
+<p>“抬起头，让我看看你是不是真的在咽。”陆宇恒在性爱即将完成之际，最后施展了⼀波余威。</p>
+<p>苏岚抬起头，喉结上下律动，正在做吞咽的动作。</p>
+<p>陆宇恒满意地点头。</p>
+<p>苏岚抱着陆宇恒的腰，舔了两⼝陆宇恒硬鼓鼓的腹肌。</p>
+<p>陆宇恒继续⽤“主⼈”的⻆⾊施展淫威，“谁让你……”</p>
+<p>还未说完，苏岚就朝着陆宇恒的乳头狠狠咬了⼀⼝，陆宇恒全身战栗了⼀下，他喊了⼀声：“哦，疼疼疼！”</p>
+<p>“还没装完呢？还真把⾃⼰当我主⼈了？嗯？”苏岚靠进陆宇恒身上，调侃道，“你早就想这么命令我了，是吧？”</p>
+<p>陆宇恒贱笑两声，低声下⽓地讨好：“我不是为了让你更爽吗？我之前那么温柔对你，你都没什么反应。我不是想让你享受⼀点吗？”</p>
+<p>见自己这样的解释苏岚似乎并不接受，陆宇恒笑嘻嘻地朝苏岚的脸上亲了⼀下，然后自觉跳到床边，跪了下来。</p>
+<p>他贱兮兮地握着苏岚的手，笑着说：“宝⻉，我知道你的G点在哪⾥了。”</p>
+<p>“在哪⾥？”苏岚盖上被⼦，也给陆宇恒丢了⼀条被⼦。</p>
+<p>陆宇恒⽤被⼦裹住⾃⼰的身体，然后继续跪在地上：“除了鸡巴，还有胸肌、乳头、⼤腿内侧，还有屁股……哦，对了，你还喜欢我命令你，骂脏话，对吧？”</p>
+<p>陆宇恒正如数家珍似的掰着⼿指头细数苏岚的性敏感地带，就被苏岚扔了个枕头，“滚，让你说你还真说，这种事情做爱的时候说说就⾏了，上来吧。”</p>
+<p>陆宇恒笑嘻嘻地爬上床，抱住苏岚。</p>
+<p>他抱住苏岚的时候，⼤腿上的腿⽑扎到了苏岚屁股上那块被他打得通红发烫的地⽅，苏岚沉吟⼀声：“啊，疼……”</p>
+<p>陆宇恒赶快问：“哪⼉疼？”</p>
+<p>苏岚往屁股那⾥摸去：“下⾯，被打的。”</p>
+<p>陆宇恒尴尬地想起⾃⼰刚刚⼊戏太深，⽤⽪带打了苏岚的屁股。</p>
+<p>苏岚平时被陆宇恒呵护得很好，那⼏下在做爱时算是调剂情欲的良药，可性爱的快感⼀过，疼痛感就占据了上风。</p>
+<p>当时被打的时候，苏岚也沉醉于那种被征伐羞辱的快感，并没有觉得有什么，也没有拦陆宇恒，两个⼈都没轻没重的，现在想想真是后悔。</p>
+<p>陆宇恒知道是⾃⼰的问题，正准备再跪到地上，苏岚就拦住了他：“好了好了，你注意点别碰到就⾏，别跪了。”</p>
+<p>陆宇恒点头抱住苏岚，⼿伸到苏岚屁股上轻轻揉起来。</p>
+<p>第⼆天，苏岚屁股那里还是疼得厉害，陆宇恒给他穿⾐服的时候发现那里红了⼀⼤⽚，内疚地低下了头。</p>
+<p>“没事，笨蛋，我俩都同意的事情，不能怪你。快帮我穿⼀下⾐服，苏谈估计已经醒了。”</p>
+<p>陆宇恒⼩⼼翼翼地给苏岚穿上内裤和内⾐，然后从柜⼦⾥拿出⼀件天鹅绒大衣给苏岚批上。</p>
+<p>苏岚穿好⾐服就在陆宇恒的搀扶之下⾛出房间。</p>
+<p>⼩家伙看⻅苏岚走出来的时候疼得脸都揪在⼀起了，⼜忍不住哭了起来，“哥哥……哥哥！”</p>
+<p>“不哭不哭，我没事。”苏岚⾛过去抱住弟弟，轻轻揉着他的脸哄着他。</p>
+<p>谁知道苏谈竟然从苏岚的怀⾥挣出来，然后急着去翻苏岚身上遮着的大衣，想看看哥哥伤在哪⾥。</p>
+<p>“哈哈，哥哥真没事。”怕苏谈看见什么不该看的，苏岚赶紧拦下他，欣慰地抚摸着他的头发。</p>
+<p>听⻅这句没事，小家伙睁着大眼睛盯着苏岚，半信半疑地坐回沙发上，趴在苏岚的腿上。</p>
+<p>苏岚一边轻抚苏谈的头发，一边⽤⼝型对陆宇恒说：“快去做饭！听⻅没！”</p>
+<p>陆宇恒微笑着⽐了个“OK”的⼿势，⾛进厨房。</p>
 
-                        <a class="main-nav-link" href="/archives">Archives</a>
-
-                    </nav>
-                    <nav id="sub-nav">
-
-
-                        <a class="nav-icon" href="/atom.xml" title="RSS Feed"><span class="fa fa-rss"></span></a>
-
-                        <a class="nav-icon nav-search-btn" title="Suche"><span class="fa fa-search"></span></a>
-                    </nav>
-                    <div id="search-form-wrap">
-                        <form accept-charset="UTF-8" action="//google.com/search" class="search-form" method="get">
-                            <input class="search-form-input" name="q" placeholder="Suche" type="search">
-                            <button class="search-form-submit" type="submit">&#xF002;</button>
-                            <input name="sitesearch" type="hidden" value="http://nevereatsoldierlines.github.io"></form>
-                    </div>
-                </div>
-            </div>
-        </header>
-
-        <div class="outer">
-            <section id="main">
-                <article class="h-entry article article-type-post" id="post-Chapter1" itemprop="blogPost" itemscope
-                         itemtype="https://schema.org/BlogPosting">
-                    <div class="article-meta">
-                        <a class="article-date" href="/2023/06/06/Chapter1/">
-                            <time class="dt-published" datetime="2023-06-06T14:55:50.553Z" itemprop="datePublished">
-                                2023-06-06
-                            </time>
-                        </a>
-
-                    </div>
-                    <div class="article-inner">
-                        <header class="article-header">
-                            <h1 class="p-name article-title" itemprop="headline name">
-                                首页
-                            </h1>
-                        </header>
-                        <div class="e-content article-entry" itemprop="articleBody">
-                            <p>欢迎阅读! </p>
-                            <p><a href="#" rel="noopener" target="_blank">网站维护记录</a></p>
-                            <blockquote>
-                                <h1 id="掌中舞"><a class="headerlink" href="#掌中舞" title="掌中舞"></a>掌中舞</h1>
-                                <blockquote>
-                                    <p>作者：SUNHAT<br><br>他们争斗半生，却不过是在他人的掌上作舞，成了他人的笑柄和工具。</p>
-                                </blockquote>
-                            </blockquote>
-                            <table>
-                                <thead>
-                                <tr>
-                                    <th align="center">章节</th>
-                                    <th align="center">章节名</th>
-                                    <th align="center">章节描述</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/06/Chapter1/">第一章</a></td>
-                                    <td align="center">从前种种，譬如昨日死</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/07/Chapter2/">第二章</a></td>
-                                    <td align="center">从后种种，譬如今日生</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/07/Chapter3/">第三章</a></td>
-                                    <td align="center">当众羞辱</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/07/Chapter4/">第四章</a></td>
-                                    <td align="center">再续前缘？</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/07/Chapter5/">第五章</a></td>
-                                    <td align="center">碰撞</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/07/Chapter6/">第六章</a></td>
-                                    <td align="center">整治部门</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/07/Chapter7/">第七章</a></td>
-                                    <td align="center">动荡</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/07/Chapter8/">第八章</a></td>
-                                    <td align="center">一箭四雕</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/07/Chapter9/">第九章</a></td>
-                                    <td align="center">房客</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/07/Chapter10/">第十章</a></td>
-                                    <td align="center">冰释前嫌</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/07/Chapter11/">第十一章</a></td>
-                                    <td align="center">缠绵悱恻</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/07/Chapter12/">第十二章</a></td>
-                                    <td align="center">周末</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/10/chapter13/">第十三章</a></td>
-                                    <td align="center">制衡</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/10/chapter14/">第十四章</a></td>
-                                    <td align="center">幸福下去</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/10/chapter15/">第十五章</a></td>
-                                    <td align="center">视频通话</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/10/chapter16/">第十六章</a></td>
-                                    <td align="center">噩梦</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/10/chapter17/">第十七章</a></td>
-                                    <td align="center">又一个谎言</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/10/chapter18/">第十八章</a></td>
-                                    <td align="center">旧友高虎</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/10/chapter19/">第十九章</a></td>
-                                    <td align="center">敲诈</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/10/chapter20/">第二十章</a></td>
-                                    <td align="center">泳池</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/10/chapter21/">第二十一章</a></td>
-                                    <td align="center">混蛋</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/12/chapter22/">第二十二章</a></td>
-                                    <td align="center">苏岚对峙高虎</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/12/chapter23/">第二十三章</a></td>
-                                    <td align="center">高虎入网</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/12/chapter24/">第二十四章</a></td>
-                                    <td align="center">苏岚下跪</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/12/chapter25/">第二十五章</a></td>
-                                    <td align="center">分别</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/12/chapter26/">第二十六章</a></td>
-                                    <td align="center">生日？忌日？</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/12/chapter27/">第二十七章</a></td>
-                                    <td align="center">苏岚升迁</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/12/chapter28/">第二十八章</a></td>
-                                    <td align="center">雪人</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                <tr>
-                                    <td align="center"><a href="/2023/06/12/chapter29/">第二十九章</a></td>
-                                    <td align="center">情为何物</td>
-                                    <td align="center">暂未总结</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                            <p>作者火热更新中🚗 评论功能开发中，6月内上线，请谅解<br>更多小说正在赶来中，也欢迎你与我分享，我会将您的小说分享到该网站，当然，您需要并且信任我的话。</p>
-                            <p>若需要请留言（留言功能暂未开发,大约七月上线）</p>
-                            <p>注意：本网站仅为分享所用，转载请标注来源信息</p>
-
-                            <br>
-                            <h3>
-                                评论区
-                            </h3>
-                            <table>
-                                <thead>
-                                
-                                <td align="center" width="100">章节</td>
-                                <td align="center" width="100">评论者</td>
-                                <td align="center">评论内容</td>
-
-                                </thead>
-                                <tbody id="commentPlace">
-                                
-                                </tbody>
-                            </table>
-
-                        </div>
-                        <footer class="article-footer">
-                            <a class="article-share-link"
-                               data-id="clikeokfx00006hwy6bfu02jz" data-title="第一章 从前种种，譬如昨日死"
-                               data-url="http://nevereatsoldierlines.github.io/2023/06/06/Chapter1/"><span class="fa fa-share">Teilen</span></a>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://nevereatsoldierlines.github.io/2023/06/18/chapter34/" data-id="clj1a0xe10004mvwye17cbzqq" data-title="第三十四章 角色扮演" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
 
 
-                        </footer>
-                    </div>
+
+  
+    <article id="post-chapter33" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/06/18/chapter33/" class="article-date">
+  <time class="dt-published" datetime="2023-06-18T10:15:54.000Z" itemprop="datePublished">2023-06-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/06/18/chapter33/">第三十三章 鱼水之欢</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>折腾完一切之后，两人终于躺在一张床上。</p>
+<p>苏岚躺上来的时候，陆宇恒问：“都弄好了？”</p>
+<p>苏岚点头：“嗯。”</p>
+<p>两人望着窗外的清澈明亮的星空，相拥在一起。</p>
+<p>两人四肢相拥的那一刻，苏岚不由地感慨——好久没有这么安逸地拥抱在一起看着这么漂亮的星空了。</p>
+<p>明亮的星月透过巨大的落地窗将皎白的光投进卧室，二人身下纯白的被单被星月的微光照得白如荧幕。陆宇恒抱住苏岚，嘴贴在他漂亮的锁骨上，气息均匀、温暖、干净，一吐一吸都是情意。</p>
+<p>“岚岚，我可能已经无药可救了。”陆宇恒双臂的力气更大了一些，他将脸埋在苏岚温暖的胸膛，闭着眼睛，享受着此刻苏岚身体散发的温热。</p>
+<p>即便知道自己已经身处苦海，陆宇恒却不愿自救，只任由身体和那颗随波浮沉的心随着重力慢慢下沉，溺于深邃的海水之中。</p>
+<p>“什么？”苏岚刚刚一心望着窗外的星空，并没有听清他说的话，他反应过来，便向陆宇恒询问。</p>
+<p>“没什么。”陆宇恒拥紧苏岚，颤抖着的嘴唇从苏岚漂亮的锁骨处移到他薄而软的双唇，苏岚愣了好久，才反应过来他要做什么。</p>
+<p>他的身体已经很久都没有接受过这样强烈而直接的刺激了，上一次做爱是多久之前发生的事情了呢？苏岚想不起来了，只记得那是好久好久之前了。在那个黑夜，陆宇恒和他在水中交缠，水面被二人放纵的动作荡起了层层涟漪。</p>
+<p>尽管快一年没做过这种事情，有些不适应，但苏岚却并没有半点反抗，他僵着身子，任由陆宇恒侵略。</p>
+<p>不知觉间，苏岚上身的衣物已经无法蔽体，凌乱的衣物散落在他那具完美修长，肌肉匀称的躯体上。</p>
+<p>温柔的吻落在苏岚上身的每个角落。腹肌、肋骨、胸膛、锁骨、脖颈、下颌……</p>
+<p>陆宇恒用最直接的接触，刺激苏岚敏感的神经，一遍遍地确认现在在他身下的这个人，他思念了近一年的人，如今是主动来到自己身边，甘愿让自己这么肆无忌惮地掠夺这具自己觊觎了许久的漂亮的身体的。</p>
+<p>他一遍遍亲吻苏岚身上每个角落。</p>
+<p>苏岚被这样强烈的情欲冲击得不由自主地闭紧了双眼，直到陆宇恒的嘴唇覆在他的薄唇之上，他才慢慢睁开眼睛，迷朦地望向自己身上的这个男人。</p>
+<p>苏岚正准备开口说话，陆宇恒却用那柔软的舌撬开他的牙齿，柔韧的舌头在苏岚的口腔中不停搅动、掠夺。他想说的话被陆宇恒攻入口中的软物硬生生挤回肚子里。</p>
+<p>苏岚自我放弃一般闭上眼睛。</p>
+<p>那对薄唇迁徙着，游掠着，如战火燎原般，席卷征伐苏岚身体的每个敏感点。终于，移到苏岚最敏感的乳头处。</p>
+<p>陆宇恒含下那挺立在那块饱满结实的胸肌上，漂亮性感的凸起，轻轻嘬吸舔舐。苏岚的胸膛在这样强烈的刺激下不⾃制地上下起伏。</p>
+<p>情欲像冲破闸门的洪水，涌泄而出。苏岚试图用理智克制着情欲，嘴角却还是难以遏制地泄出一丝淫荡而绵长的呻吟。</p>
+<p>⻅苏岚这样意乱情迷的模样，陆宇恒有一瞬间的恍惚，抬起头，⽤带着⼀丝苦涩的⼝吻调侃道：“你这⾥，还和以前⼀样敏感。”</p>
+<p>苏岚躺在床上，他感觉喉头溢上来一丝苦涩。他唤起迷离中的最后一丝理智，苦笑着说：“是啊，我已经改不了了。”</p>
+<p>“我会好好对你的，相信我。”说完这句话，陆宇恒闭上眼睛，苏岚还未来得及点头，陆宇恒便再度吻上他的嘴唇，舌头再次钻入苏岚的口腔。</p>
+<p>他接吻的动作虽然并没有技巧，但也算不上粗鲁，甚⾄可以称得上是温柔，可苏岚的泪腺却不知缘由地分泌出滚热的液体。</p>
+<p>眼泪覆着那双干净清澈的眼眸，泛着光。</p>
+<p>苏岚情难自制地抬起胳膊，从背后圈住陆宇恒，双腿慢慢叉开。</p>
+<p>身下那个魅惑的肉穴似乎在引诱着陆宇恒，陆宇恒却瞥⻅了苏岚眼中的泪光，他轻轻替苏岚抹去眼泪。</p>
+<p>眼泪被拭去，苏岚感觉视线清晰了不少，他看见陆宇恒俊美硬朗的脸庞。</p>
+<p>两人视线相对良久，体内暗涌着的情欲相互浸染，情难自禁。</p>
+<p>一阵长达数分钟的，疯狂的、互相掠夺式的接吻一触即发，直到双方嘴唇分离的那一刻，两人才意识到刚刚那个吻有多张扬。</p>
+<p>苏岚歪过头调整气息，然后主动脱去覆在上身的名存实亡的衣物束缚。</p>
+<p>正在深冬时节，即便是在室内，暖气的温热还未达到房间的每一个角落，空⽓尤为冰冷⼲燥。</p>
+<p>上身的束缚被⾃⼰粗鲁褪去的那⼀刻，苏岚全身被冷得猛颤起来。陆宇恒正准备帮他穿上⾐服，却被他伸⼿拦下：“别，我不冷。”</p>
+<p>他停下⼿中动作，苏岚却眯着眼，微笑道：“你来帮我脱裤子。”</p>
+<p>他按着苏岚轻轻推倒在床上，慢慢地替苏岚解开早已松垮的⽪带，脱下⻄裤、内⾐、内裤。</p>
+<p>时隔九⽉，失⽽复得，陆宇恒甚为局促。即便从前陆宇恒也算是温柔的，可现在，他只想更温柔⼀点，更⼩⼼翼翼⼀点。</p>
+<p>他不希望苏岚受任何伤。</p>
+<p>这场爱情从⼀开始，从陆宇恒还作为岳炎时，为了苏岚⽢愿承受牢狱之苦开始，就不会公平了。</p>
+<p>明知是深渊，是罪孽，还忍不住向前；明明是这么卑微的爱，陆宇恒却⼀往向前，⽆法回头了。</p>
+<p>我爱你，我爱你，我爱你……陆宇恒在心底悄悄呐喊着苏岚听不见的真挚而热烈的心声，双手已经开始颤抖。</p>
+<p>苏岚的身材维持得很好，宽肩窄腰，翘臀细腿，脸上羞荣洋溢却依然清秀俊美。</p>
+<p>光是这么看着，陆宇恒感觉鸡巴就已经硬了起来。</p>
+<p>在为苏岚移去覆在他身上的衣物时，陆宇恒⾜⾜花了⼆⼗分钟才将苏岚身上遮蔽的所有⾐物全部脱下。</p>
+<p>之后，陆宇恒则粗鲁地拽掉⾃⼰身上所有的⾐物，慢慢俯下身，压上苏岚正在剧烈起伏的宽阔坚韧的胸膛，在那块光洁结实的区域啃咬舔舐。</p>
+<p>苏岚歪过头，尽力不去想象陆宇恒在⾃⼰身上掠夺给⾃⼰带来的羞耻感，以免那羞耻感⼜⼀次翻起⾃⼰隐藏得⾜够好的肮脏的性的念头。</p>
+<p>他张开双臂，任由陆宇恒在⾃⼰硬挺、饱满的胸肌上亲吻揉动。</p>
+<p>陆宇恒温柔的吻遍布苏岚赤裸的全身——在冷空⽓中不断颤动筋挛的胸肌；轮廓曲线流畅的锁⻣；绷紧的六块腹肌……每⼀处都被他温柔相待。</p>
+<p>⽽苏岚压抑了九个多⽉的性欲却⽆法被这温柔抚平，他只想被陆宇恒插⼊自己的后穴，被陆宇恒捣烂⾃⼰的屁股。</p>
+<p>陆宇恒看出了苏岚的不安躁动，他按着苏岚扭动着的肩膀，慢慢下移着身体……</p>
+<p>“啊～爽！”直到陆宇恒将嘴唇移到那根已经硬挺的鸡巴上，苏岚胸⼝憋了好久的欲念才终于不必压抑，全部呻吟出⼝。</p>
+<p>陆宇恒含住苏岚硕大的分身，将其整根没⼊口腔中。</p>
+<p>苏岚感觉下⾯那根阳物顶端抵在了陆宇恒喉间那块柔软的区域，这也就算了，陆宇恒从前也做过那种事情。</p>
+<p>可怕的是，陆宇恒竟然⽤嗓⼦眼那块嫩⾁给他⻳头顶端那个⼀开⼀合的敏感的精⼝做类似按摩的事情⸺他在给自己深喉。</p>
+<p>尽管陆宇恒常为他口交，却甚少尝试深喉。</p>
+<p>苏岚⽴刻反应过来，撑起无力的身体坐了起来，试图将⾃⼰的鸡巴从陆宇恒⼝中拿出来。</p>
+<p>他的动作却很快被陆宇恒察觉。陆宇恒按着苏岚顶翘的臀，阻⽌他将那根物体拿出去。</p>
+<p>苏岚恳求道：“别这样，别……这样太深了，你会受伤的。拿出来。”</p>
+<p>苏岚虽然常给陆宇恒做深喉，可他却不愿意陆宇恒也给自己做这样的事情。</p>
+<p>陆宇恒对苏岚太好了，因此，苏岚希望⾃⼰在做爱的时候可以做更卑微的事情，以此来弥补一丝陆宇恒对他的偏爱。</p>
+<p>所以他每次做爱都极尽下贱，就是希望能还他⼀点。</p>
+<p>从前，陆宇恒即便为他⼝交，也是在安全的情况下做的。</p>
+<p>这让苏岚感觉到⼀丝平衡——至少，在做爱的时候，他是付出更多的那个。</p>
+<p>可现在，陆宇恒在做爱的时候也这样卑微。</p>
+<p>苏岚愧疚难堪。陆宇恒，你这样，要我怎么还你呢？</p>
+<p>正当苏岚这么想着，陆宇恒喉间溢出一丝干呕声。</p>
+<p>苏岚手足无措起来，为了赶紧结束这场危险的⼝交，他扭动着柔韧的腰肢，胸肌也上下起伏起来，他不再压抑内⼼的欲望，放纵呻吟着：“嗯～啊，嗯～”</p>
+<p>终于，快要射了……</p>
+<p>苏岚伸腿想推开⼀点陆宇恒，却被他抓住脚踝。</p>
+<p>“我要射了，你快松⼝。”苏岚恳求道。</p>
+<p>陆宇恒抬眼看了一眼苏岚，随即将吞在口中的硬物慢慢吐出。苏岚⻅状不再压抑，揉着身上那两块硬邦邦的胸肌，喘着气迎接即将到来的更强烈的高潮。</p>
+<p>谁知此时陆宇恒像是得逞一般，迅速⽤嘴唇裹住苏岚的阳物，再次将其吞入口中。</p>
+<p>苏岚反应过来之后才发现已经来不及了。</p>
+<p>就这样，他在陆宇恒嘴中口射了。</p>
+<p>“对不起。”苏岚一边享受着刚刚的极致高潮，一边在仅存的理智驱动下红着脸道歉。</p>
+<p>陆宇恒满⾜地将苏岚此刻依然挺⽴跳动的鸡巴吐了出来，嘴中却残留了⼤部分淫秽之物。</p>
+<p>苏岚拿起床头柜上那杯⽔，送到陆宇恒嘴边。陆宇恒微笑着推开苏岚的⼿。</p>
+<p>他吐出口中的精液，将那一团污秽涂抹在苏岚上下起伏的胸口，然后笑着说：“现在轮到你了。”</p>
+<p>听⻅这句话，苏岚迅速翻过身，撅起屁股，将⾃⼰下⾯那个早已被开拓好，正⼀张⼀合地漏出浅红⾊肠⾁的肉⽳对着陆宇恒。</p>
+<p>苏岚回过头看向陆宇恒，星⽉之光照在陆宇恒脸上，他浅麦色的脸被这冷⽩⾊的光照得硬朗俊美。</p>
+<p>看着陆宇恒这样盯着⾃⼰那正一缩一放的后⽳，苏岚的⼼跳开始加速，内⼼涌出了许多羞耻可怕的想法。</p>
+<p>他将整个头都埋进了枕头⾥，呻吟之声却难以掩埋，从枕头和头部的缝隙之中泄出。</p>
+<p>“宇恒，别看了，我之前在浴室做过清理了。求你，别看了，操我吧。”苏岚哀求。</p>
+<p>“为什么？很好看呢。”陆宇恒笑说，“如果我嫌弃你脏，那我有什么资格和你做爱？”</p>
+<p>“不，”苏岚再度哀求，“求求你了，不要再这样了，插进来吧，我不想再被这样看着了。”</p>
+<p>陆宇恒从床头柜上找出一盒润滑液，将其涂抹在自己的手指上，然后伸出修长而滑腻的⼿指，将其慢慢地、⼩⼼地探进苏岚那个正不停吐露魅⾁的⽳内，⽤那根⼿指替他慢慢扩充。</p>
+<p>⼀根⼿指⽆压⼒进去，慢慢地⼜是下⼀根⼿指，陆宇恒一边转动手指，一边⼩⼼翼翼地⼀根根⼿指慢慢试探，⽣怕前戏没做好，⾃⼰直接⽤那根巨物插进去，苏岚会忍不住。</p>
+<p>知道此刻侵入⾃⼰后⽳内的是陆宇恒的⼿指，苏岚说：“不⽤扩充了，就直接插进来吧。”</p>
+<p>“你会疼的。”陆宇恒三根修⻓的⼿指还留在苏岚的⽳内，想要找出苏岚的前列腺，可是却怎么也探不到那块突起。</p>
+<p>倒是那个骚⽳此刻正不断绞着陆宇恒的⼿指，分泌出不少淫⽔。</p>
+<p>“我不怕疼，快插进来，快操我吧。”苏岚长时间得不到抚慰，干脆自己一前一后地拱着那浑圆挺翘的屁股，让陆宇恒的手指在自己的穴内慢慢抽插。</p>
+<p>陆宇恒不急不躁地将⼿指抽出，然后慢慢就着⼿指刚刚扩充还未来得及合上的⽳⼝，将⾃⼰早已硬胀的阳根慢慢顶⼊苏岚的菊花⾥。</p>
+<p>苏岚在感受到那根陌生而熟悉的巨物侵⼊自己后穴的时候，终于呻吟出声。</p>
+<p>他将头从枕头中拿出，趁着剧烈的快感，猛烈呼吸，毫不遮掩地呻吟起来：“嗯哼～哈，爽，快点，干我，快！干死我！”</p>
+<p>陆宇恒温柔地翻过苏岚的身体，弯腰亲吻苏岚⼤腿根那⼀处敏感⽽柔软的嫩⾁，苏岚在陆宇恒亲吻那块敏感地带的时候忍不住溢出浪叫之声。</p>
+<p>陆宇恒笑着说：“苏岚，我⼜在你身上找到⼀块敏感处。”</p>
+<p>“那就，快⼲起来吧。”苏岚扭动腰肢，腹肌被紧绷的身体，尤其是紧绷的胯部勒得更显形，六块明显的腹肌让陆宇恒忍不住分泌口水。</p>
+<p>陆宇恒闭着眼亲吻苏岚的腹肌，慢慢摆起胯。他的动作原本称得上是温柔，苏岚却催促：“再用力一点，快。”</p>
+<p>听见这话，陆宇恒目光坚定如炬，他拽着苏岚的脚踝，猛力抽插、放肆捣⼲起来。</p>
+<p>苏岚被突如其来的猛烈抽插捣得失去了⽓⼒，紧紧攥着床单的⼿也在一波波冲击下慢慢松开，他一边呻吟着一边屈着脚趾，浪叫道：“啊！再大力一点，操我！啊～对！”</p>
+<p>陆宇恒挑眉问道：“爽不爽？”</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://nevereatsoldierlines.github.io/2023/06/18/chapter33/" data-id="clj1a0xe00003mvwy0sl455iu" data-title="第三十三章 鱼水之欢" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
 
 
-                    <nav id="article-nav">
-                        <a class="article-nav-link-wrap" href="/2023/06/06/hello-world/" id="article-nav-older">
-                            <strong class="article-nav-caption">Älter</strong>
-                            <div class="article-nav-title">SUNHAT首页</div>
-                        </a>
-                    </nav>
-                </article>
-            </section>
 
-            <aside id="sidebar">
+  
+    <article id="post-chapter32" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/06/18/chapter32/" class="article-date">
+  <time class="dt-published" datetime="2023-06-18T10:15:51.000Z" itemprop="datePublished">2023-06-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/06/18/chapter32/">第三十二章 一家团聚</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>二人在呼啸的冷风中依偎着对方回到酒店。</p>
+<p>苏谈在酒店里等得困了也不肯睡觉，一直坐在地上守着身下的游戏棋，在房间里等苏岚和陆宇恒。</p>
+<p>直到听见开门的声音，苏谈立刻恢复了精神，困乏疲倦的小脸也立刻变得神采奕奕，他睁着透亮的眼睛，往房门的方向望去。</p>
+<p>他看见了哥哥和陆宇恒。</p>
+<p>“宇恒……哥哥。”小家伙又是高兴，又是委屈，他从地上爬起来，冲到陆宇恒身边，抱住陆宇恒的腰，大哭起来。</p>
+<p>陆宇恒笑着抱起苏谈，让这个小家伙坐在自己的手臂上。</p>
+<p>“宇恒……哥哥……不要……走了。”小家伙表达能力本就欠缺，现在又在哭鼻子，说话就更结结巴巴了。<br>苏岚在一旁看着，又心酸又想笑。</p>
+<p>陆宇恒温柔地给苏谈擦掉眼泪，笑着说：“宇恒哥哥不走，我以后都会陪你和哥哥。”</p>
+<p>苏谈抬手抓住陆宇恒的手指，委屈地点头，虽然不哭，却还是满脸的不高兴。</p>
+<p>陆宇恒笑着扬起下巴，伸出修长的手指，轻轻弹着他柔软的脸蛋逗他：“好了好了，别不开心了。笑一个给宇恒哥哥看看，好不好？”</p>
+<p>说着，陆宇恒轻轻颠动胳膊，哄着坐在自己手臂上的小家伙，直到他破涕为笑，不停亲自己的鼻尖才停下。</p>
+<p>陆宇恒放下苏谈，去浴室换了件狐毛大衣。</p>
+<p>他穿着衣服走出来，在兄弟俩面前转了转，自恋地问：“好不好看？”</p>
+<p>苏岚被他逗笑了，别过头笑了声，虽然觉得还不错，但还是嘴硬地嗔怪道：“好看个毛，臭美。”</p>
+<p>倒是苏谈会捧场，他笑着拍着手跑到陆宇恒腿边，在他的腿边转着圈，高兴地附和道：“好看，好看！”</p>
+<p>“听见没？”陆宇恒挑起眉，得意地蹲下来，亲了一下苏谈的脸，幸福地说：“这才是有眼光的。”</p>
+<p>说完，陆宇恒对苏谈说：“宇恒哥哥带你去吃炸鸡好不好？”</p>
+<p>苏谈用实际行动回答陆宇恒的问题——他伸长了脖子，朝着陆宇恒的脸廓亲了一下。</p>
+<p>苏岚反应过来，像是吃醋般不服气地说：“喂！陆宇恒，你怎么能抢我的功劳？是我允许你们去吃的！”</p>
+<p>“嘿嘿。”陆宇恒坏笑着背着苏谈跑出房间，高呼着：“喔，走咯！去吃炸鸡咯，岚岚拦不住我们！”</p>
+<p>听到这话，苏谈也乐得咯吱咯吱地笑起来，那一双漂亮的大眼睛都笑弯了，他也跟着附和起来：“哦！”</p>
+<p>“站住！”苏岚跑着跟了上去。</p>
+<p>背着苏谈去了酒店旁一家炸鸡店，陆宇恒将他放到地上，给苏岚发了定位信息。</p>
+<p>刚刚和陆宇恒重逢，苏谈一刻也不愿意和陆宇恒分开，他圈着陆宇恒的腰不肯放手，陆宇恒问他要吃什么，他也不说，只将头埋进陆宇恒的狐毛大衣里，不安分地轻蹭。</p>
+<p>收银员见他一直不点餐，反正这时候人流量也不大，便笑着和他调侃起来：“先生，这是您孩子吗？”</p>
+<p>陆宇恒犹豫了一会，为了不引起误会，也不想解释太多，就笑着说：“是，小孩不听话，见笑了。”</p>
+<p>听见这话，苏谈不安分的动作停了下来。他从陆宇恒的宽敞又温暖的衣物内轻拱着钻出了脑袋，后脑勺抵在陆宇恒腹前，用一双清澈干净的大眼睛直勾勾地盯着收银员。</p>
+<p>收银员被这家伙的萌态软化了心，笑着问：“这小家伙真可爱呢，多大了呀？”</p>
+<p>陆宇恒正准备随口答一个和这小家伙外貌相仿的年纪，苏岚就赶了过来，说：“十岁了。”</p>
+<p>收银员不可思议地问：“十岁？那怎么才这么点大呀？”</p>
+<p>苏岚走过来，手伸到陆宇恒腰后，用力掐了一把：“你在乱说什么呢？”</p>
+<p>“你是……”收银员被这三个人搞得晕头转向，不顾着工作，开始八卦起来。</p>
+<p>“我是他哥哥。”苏岚说。</p>
+<p>“哥哥？不像啊？”收银员这一下被搞得彻底晕头转向了，她歪着头思考起来。他是这孩子的哥哥的话，那他也是刚刚这个男人的儿子了？看着不像啊，他怎么看也才三十来岁的样子，两人看起来差得不多啊？</p>
+<p>陆宇恒腰上隐隐作痛，他皮笑肉不笑地找了个借口解释：“你理解错了，他是我哥哥……是这小家伙的伯伯……”</p>
+<p>说完，陆宇恒把小家伙抱走，然后嬉皮笑脸地说：“哥哥～你来点餐吧。”</p>
+<p>苏岚叹了口气，摇头道：“他们长不大，见笑了。”</p>
+<p>收银员笑着说：“哦，没事。”</p>
+<p>苏岚点了三份炸鸡腿、汉堡、蛋挞和鸡米花，又买了三杯热牛奶，站在柜台前边玩手机边等食物。</p>
+<p>过了一会，苏谈饿得等不及了，他跑了过来，从背后抱住苏岚，胆怯又委屈地小声嘟囔着：“哥……哥哥，我，我饿了。”</p>
+<p>苏岚端着餐盘，微笑着说：“别急，来，过来吃吧。”</p>
+<p>服务员挠头道：“哥哥？伯伯？到底是什么关系？好奇怪啊……”</p>
+<p>苏岚一手捧着盘子，一手牵着苏谈上了二楼，只留下收银员一人在原地凌乱。</p>
+<p>“哥哥……”苏谈坐在苏岚旁边，朝着他张开嘴，苏岚则任劳任怨地给他喂东西吃。</p>
+<p>小家伙吃几根薯条就笑着拿头去蹭哥哥的胳膊，乐此不疲。苏岚抬了抬手臂，幸福地“警告”道：“不许蹭哥哥了，听见没？再蹭不给你喂了啊。”</p>
+<p>说是这么说，苏谈当然没听进去，苏岚也一样认栽般给他喂食物。</p>
+<p>陆宇恒托着下巴，看着小家伙和哥哥亲密的互动，无奈地笑着往嘴里塞着薯条，感慨道：“诶，别看这小家伙刚见到我的时候那么黏着我，真和我玩腻了，他还是最喜欢你这个哥哥。”</p>
+<p>苏岚得意地扬起下巴，笑着说：“那当然，我可是他亲哥，你还想取我而代之不成？”</p>
+<p>陆宇恒厚着脸皮开了个玩笑：“取你而代之没想过，娶你倒是想过不少次。”</p>
+<p>苏岚被他撩得脸色微红，给了他一个白眼，嗔怪道：“滚，油嘴滑舌的。”</p>
+<p>陆宇恒见他一直在喂苏谈吃东西，自己都来不及吃一口，关心道：“你能不能别喂了啊，自己也吃点吧。”</p>
+<p>苏岚不以为然，瞥了陆宇恒一眼，嗤了一声，没理他，依然给苏谈喂食。</p>
+<p>这陆宇恒可不干了，虽说他们两个大男人，小别一次不至于就要胜新婚，但哪有这么对自己的？何况他自己都没被苏岚这么喂食过，心里难免嫉妒。</p>
+<p>于是他吃着醋般说：“你这人怎么这样啊？咱俩刚见面你就要搞冷暴力是吧？”</p>
+<p>苏岚眨了眨眼睛，“我什么时候冷暴力了？”</p>
+<p>陆宇恒死皮赖脸地说：“你看你一直喂苏谈吃东西，你没看见我也在你旁边吗？”</p>
+<p>“看见了啊，那又怎样？我给我弟弟喂东西吃，你有什么意见吗？”苏岚得意地晃了晃头，然后继续笑着给苏谈喂食。</p>
+<p>“你就不能喂我吃一点吗？”陆宇恒“娇羞”地说。</p>
+<p>“啊？什么？”苏岚放下手，将鸡米花放到苏谈手上，然后挤着脸看向陆宇恒，不可思议地问：“你还要不要脸，你都多大了？”</p>
+<p>陆宇恒被苏谈“感染”得也学会了撒娇，他闭着眼，伸着脖子，学着苏谈结巴的样子，摇头晃脑地说：“不嘛，我就要哥……哥哥，喂……”</p>
+<p>苏岚嗤了一声，无奈摇头，从餐盘里拿起炸鸡腿，摇摇头，将手里的鸡腿送进陆宇恒的嘴边。</p>
+<p>陆宇恒得意地张开嘴，咬了一口炸鸡腿，闭着眼睛，享受一般细嚼慢咽起来。</p>
+<p>苏岚被这个年近三十的“小孩”弄得没脾气，放下鸡腿说：“行了吧，我的大弟弟？”</p>
+<p>陆宇恒眯着眼点了点头，满意地闭眼夸赞道：“真好吃。”</p>
+<p>看着他幼稚的模样，苏岚忍不住笑了出来。</p>
+<p>吃完晚饭，苏岚本打算回酒店，却被陆宇恒拦住去路：“就去我家吧，可以吗？以后就住在我那里，和我们从前一样。”</p>
+<p>苏岚看了一眼苏谈，他倒高兴，笑得合不拢嘴，捉着自己的手指，手足舞蹈地赞同：“好！”</p>
+<p>苏岚无奈地摇头，这两个家伙是一个鼻孔出气的。</p>
+<p>也算了，住陆宇恒家里，至少可以省下在这个寸土寸金的地方每月大几千的房租。于是他说：“那好吧。”</p>
+<p>回到陆宇恒母亲生前在上海住的别墅，小家伙迫不及待地冲进屋内，一屁股坐到地毯上，笑嘻嘻地看着哥哥和陆宇恒惊讶的表情。</p>
+<p>陆宇恒走过去，坐到他旁边，轻轻捏着他的鼻子，用宠溺的口吻说：“你这小家伙，还真是不认生啊？刚来这里就这么大摇大摆的？”</p>
+<p>苏谈笑嘻嘻地从羽绒服的敞口口袋中拿出一张被他叠得完好的游戏棋棋盘，正准备拉着陆宇恒陪自己玩游戏棋，苏岚走过来，“好了，谈谈，跟哥哥去洗澡吧。”</p>
+<p>听见这话，苏谈警惕地抱着陆宇恒的胳膊，扭头看向苏岚，撅嘴摇头。</p>
+<p>陆宇恒替苏谈求情：“你别这样，再给他玩一会嘛。”</p>
+<p>见陆宇恒帮自己说话，苏谈抱着陆宇恒的胳膊笑了起来。苏岚叹了口气，只好答应再给他玩一会，毕竟他也好久不见陆宇恒了，一时兴奋也能理解。</p>
+<p>苏谈仔细小心地摊开棋盘，和陆宇恒对战厮杀起来。</p>
+<p>两人激烈对战了六局，陆宇恒节节败退，一局都没赢过。他一边敲着头，一边暗恼，这榆木脑袋，没想到只是大半年不玩游戏棋，居然连一个小孩都赢不了了。</p>
+<p>苏岚在一旁看着陆宇恒纠结痛苦的样子忍不住笑了出来，他们正准备再开始下一局的时候，苏岚拦住了苏谈，忍俊不禁地调侃道：“别玩了，你再玩啊，宇恒哥哥的脑袋就要被敲出窟窿了。”</p>
+<p>苏谈也玩累了，他抻着懒腰，满意地站起来，跟着苏岚走进浴室，只留下陆宇恒一人在原地坐地抱头哀嚎：“啊，我有这么笨吗？”</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://nevereatsoldierlines.github.io/2023/06/18/chapter32/" data-id="clj1a0xdz0002mvwy6x0cfu5j" data-title="第三十二章 一家团聚" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
 
 
-                <div class="widget-wrap">
-                    <h3 class="widget-title">注册</h3>
-                    <div class="widget">
-                        注册后会为您生成uid，登陆使用uid
-                        <ul class="archive-list">
-                            <li class="archive-list-item"></li>
-                            <li class="archive-list-item"><input class="search-form-input" type="text" placeholder="请输入用户名" id="username"></li>
-                            <br>
-                            <li class="archive-list-item"><input class="search-form-input" type="password" placeholder="请输入密码" id="password"></li>
-                            <br>
-                            <li class="archive-list-item"><a class="fancybox-button--fsenter" onclick="addUser()">注册</a>
-                        </ul>
-                    </div>
-                </div>
 
-                <div class="widget-wrap">
-                    <h3 class="widget-title">登录</h3>
-                    <div class="widget">
-                        <ul class="archive-list">
-                            <li class="archive-list-item"></li>
-                            <li class="archive-list-item"><input class="search-form-input" type="text" placeholder="请输入用户ID" id="userId"></li>
-                            <br>
-                            <li class="archive-list-item"><input class="search-form-input" type="password" placeholder="请输入密码" id="pwdForLogin"></li>
-                            <br>
-                            &nbsp;&nbsp;
-                            <a class="fancybox-button--fsenter" onclick="LoginByUser()">登录</a></li>
-                        </ul>
-                    </div>
-                </div>
+  
+    <article id="post-chapter31" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/06/18/chapter31/" class="article-date">
+  <time class="dt-published" datetime="2023-06-18T10:15:47.000Z" itemprop="datePublished">2023-06-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/06/18/chapter31/">第三十一章 奔赴而来</a>
+    </h1>
+  
 
-                <div class="widget-wrap">
-                    <h3 class="widget-title">评论(未登陆则以匿名用户身份发出评论)</h3>
-                    <div class="widget">
-                        <div class="widget">
-                            <ul class="archive-list">
-                                <li class="archive-list-item"><input class="search-form-input" type="text" placeholder="请输入评论内容" id="content"></li>
-                                <br>
-                                <li class="archive-list-item"><input class="search-form-input" type="text" placeholder="请输入评论章节（以数字表示；0表示首页评论）" id="chapterId"></li>
-                                <br>
-                                <li class="archive-list-item"><a class="fancybox-button--fsenter" onclick="PublishComment()">评论</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </aside>
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>次日夜晚，听哥哥说要去上海找陆宇恒，苏谈高兴得连走路都是连蹦带跳的。他在家里上上下下地翻箱倒柜，找出家里所有玩具，装了满满当当一大袋，然后挺着肚子，屁颠屁颠地走出房间，将手里抱着的玩具一下子全放到了沙发上，然后趴在上面一个个端详起来。</p>
+<p>苏岚让他少带一点，他反而不以为然，鼓着嘴，抱着袋子不肯撒手。</p>
+<p>苏岚轻轻捏了捏他那张气得像河豚一样鼓起来的脸，“好、好、好，就听你的，都带上，可以了吧？反正也不是多重。”</p>
+<p>说罢，苏岚无奈地抱住这个气鼓鼓的小刺猬。</p>
+<p>被住的那一刻，苏谈高兴得亲了一下苏岚的脸，然后笑嘻嘻地看着他。</p>
+<p>苏岚先是受宠若惊，但又后知后觉地想到，不对啊，他亲自己是为了他的“宇恒哥哥”啊？</p>
+<p>他捏着苏谈的脸，吃醋般说：“好啊你个小坏蛋，就那么喜欢宇恒哥哥是吧？为了他才亲我是吧？”</p>
+<p>苏谈像是被揭穿秘密一样羞得咯吱咯吱地笑起来。</p>
+<p>苏岚一边挠着他的腰窝，一边威胁道：“喜不喜欢哥哥？”</p>
+<p>苏谈笑得歪倒在苏岚怀里，幼小的身躯在苏岚怀里不停蠕动，他笑着求饶道：“哥哥……哥哥，也喜欢……哥哥。”</p>
+<p>苏岚停了下来，抬着小家伙的腋窝让他坐在自己腿上，面对着自己。他抱紧小家伙，问：“那你到底更喜欢谁？”</p>
+<p>苏谈支支吾吾地回答：“都……喜欢。”</p>
+<p>说完，他吐了吐舌头，机灵可爱地笑了。</p>
+<p>“不行，必须得说一个。”苏岚抬起手，屈了屈手指，威胁着苏谈，“再不说就挠你了啊！”</p>
+<p>苏谈被吓得一激灵，求饶道：“哥哥……哥哥，更喜欢……哥哥。”</p>
+<p>说罢，他笑嘻嘻地歪倒在哥哥怀里，小脑袋在哥哥温暖的肘窝里不停磨蹭。</p>
+<p>“真的？”苏岚揉了揉小家伙的头发，确认道。</p>
+<p>小家伙抬起头，用一双水灵灵的大眼睛看着，确信无疑地点了点头，然后又趁哥哥不注意，抬起头，亲了一下他的下巴。</p>
+<p>苏岚这才满意地放下他，拍了拍他的脑袋：“这还差不多，去睡觉吧。”</p>
+<p>苏谈点了点头，乖乖地抱着那个大袋子跑进房间睡下。</p>
+<p>处理好重庆总公司和苏谈学校那边的事情之后，苏岚带着已经放假的苏谈，搭飞机去往上海。</p>
+<p>苏谈一路上都将游戏棋抓在手里，连苏岚看了都觉得吃醋。</p>
+<p>下了飞机之后，苏岚将苏谈安置在酒店中，买了一笼温热香甜的小笼包喂他吃下。</p>
+<p>听说今晚就能见到陆宇恒，苏谈乖乖地把小笼包吃下，然后躺到床上。</p>
+<p>苏谈听话的模样还真是乖巧可爱，他主动张大嘴，一口吞下一个小笼包，大口大口地嚼起来，然后咕嘟咕嘟，一颗颗吞下小笼包。</p>
+<p>看着他乖巧懂事的模样，苏岚欣慰地笑了起来，他将手伸到苏谈的头顶，揉了揉他柔软的头发，欣慰地说：“真乖，我先去公司一趟，你在酒店里不要乱跑好不好？”</p>
+<p>“嗯。”苏谈忙点头应和，高兴得声调都往上扬。</p>
+<p>苏岚去公司办理了入职手续，那边的人他也一一认识过了。</p>
+<p>果然，研发部在这边的规模远不如总公司，就连办公区的差距也很大。</p>
+<p>原本在总公司研发部，公司大楼的十六楼至十八楼全都是研发部的办公区；而在这边，研发部居然要和市场部共用一层办公楼，配置极为不合理。</p>
+<p>总公司研发部连技术经理都是单独的办公室，更别说总监办公室，可以说是宽敞大气；而这边，连总监的办公室都只有区区一张办公桌，被磨砂玻璃质感的塑料板与大办公区隔开了一个可以容纳七八个人汇报工作的区域。</p>
+<p>不过这么久的经历让苏岚明白有时候心理上的折磨要比没有好工作更可怕。</p>
+<p>来到这里之后，苏岚这大半年悬着的一颗心也总算落了下来。</p>
+<p>苏岚和底下人沟通完，了解了这边的情况之后，就去了总经理办公室，例行公事报告自己的工作计划和目标。</p>
+<p>苏岚赶到的时候，市场部总监李友邻也正好在总经理办公室。陆宇恒不在，他也在等陆宇恒。</p>
+<p>见苏岚来了，李友邻趁着陆宇恒不在，便主动来探他虚实：“额，苏总是吧？”</p>
+<p>“是。”苏岚点头道。</p>
+<p>“这以后我们是同事了，研发部和市场部离得近，咱们以后就是一家人了。哈哈哈。”李友邻眼睛虽小，却透露出算计的眼神，他笑着伸出手。</p>
+<p>苏岚伸出手，微笑着与他握手，“好，合作共赢。”</p>
+<p>李友邻放开手，有些不解地试探道：“苏总主动从总公司调任到这边的目的是什么呢？总公司研发部的规模和这边比起来，简直是一个天一个地，您又何必自贬身价呢？莫非是鸿鹄之志，醉翁之意不在酒？”</p>
+<p>苏岚尴尬笑道：“李总说笑了，我只不过是希望能帮陆总分担重任而已。我与陆总是旧友。”</p>
+<p>李友邻一听这话，在心里算了一遍账，觉得有利可图，便立刻扬开嘴角，再次握住苏岚的手，奉承道：“能为朋友做出这样大的牺牲，苏总真是大义！真是后生可畏啊，我这个老家伙要多向苏总学习！”</p>
+<p>苏岚笑道：“您过誉了。”</p>
+<p>这时陆宇恒回到办公室，李友邻向陆宇恒述完职就离开了办公室。</p>
+<p>整个办公室就只剩下苏岚和陆宇恒。</p>
+<p>不想让自己看起来太过卑微，陆宇恒看着苏岚，尽力用平和的语气问：“你为什么要过来？”</p>
+<p>苏岚在外人面前的算计在面对这个对他诚心诚意付出的男人的时候荡然无存，他腼腆羞涩，紧张不已地说：“我听说你在这里过得步履维艰，所以我……”</p>
+<p>“我过得好不好和你有什么关系？你为什么要自贬调任？傻子。”陆宇恒原本想过很多种再见到苏岚时自己如何和他交涉的方式，可是真的见面了，他却只剩下责备。</p>
+<p>两人好久不见，苏岚想好的肉麻的话在此刻也难以宣之于口，剩下的只有尴尬，他支支吾吾地说了半天，却只说了一个字：“我……我……我……”</p>
+<p>“你，你什么你？”陆宇恒见他好久不说出第二个字，自己都替他急，“你难道忘了你还有房贷要还吗？”</p>
+<p>“我……”</p>
+<p>“你难道忘了你还有谈谈要养吗？”</p>
+<p>苏岚还是说不出什么，好几次开口，可每次话一到嘴边就泄气般从嘴角泄了出去。</p>
+<p>陆宇恒也不敢确定眼前的人对自己到底是真心还是有所图谋，他太聪明了，自己和他比起来简直是小孩子的智商，于是直截了当地问了出来：“你是不是又想算计我什么？”</p>
+<p>“不……不是，我……”苏岚终于正面回答问题，但也只是零零总总的几个词而已，连一句完整的话都解释不出来。更何况这个问题那么尖锐，让他想起之前自己是怎么自私地利用、伤害陆宇恒的。</p>
+<p>可是，算计是真，对他的爱也是真；欺骗是真，对他的忠诚也是真。</p>
+<p>虽然苏岚骗过他很多次，可在他心里，陆宇恒始终都会是他的人，也是他会一辈子效忠的上司。所以他一听到陆宇恒有难，就想着一定要来帮他。</p>
+<p>“我……我没有……”可是陆宇恒对他再也没有了从前那样无条件的信任，那句“你是不是又想算计我什么”着实让苏岚伤透了心。</p>
+<p>可这一切不都是自己自找的吗？苏岚眼眶湿润，紧咬下嘴唇。</p>
+<p>看见苏岚眼泪汪汪的模样，看见他做出了从前爱做的小动作，陆宇恒又忍不住心软。</p>
+<p>他扶额抬手，无奈地说：“你别说话了，我，”陆宇恒放下手，却仍然低着头，他自暴自弃地说，“我怕你再说什么还是在算计我。我知道我没有你聪明，和你比起来，我太笨了。”</p>
+<p>苏岚走过去，握住陆宇恒的手，哽咽着开口解释：“陆宇恒，我是真的喜欢你。这大半年来，我一直都想忘了你，可是你却总在我心里，让我想忘都忘不掉。我知道你不愿意相信我，这些年发生的一切是我的错。是我为了保住自己的名誉和母亲的安危将一切推给你；睡觉为了总监的位置算计你……可是，我知道错了。当我坐上研发部总监的位置后，我心里想的不是名誉、钱财和地位，而是你。这半年以来，我一直在想我们之间发生过的事情。这半年来的心理折磨让我知道，身安不如心安。所以，当我听说你在这边有困难，我想我一定要来帮你。原谅我，让我做你的人，陪你度过难关，好不好？”</p>
+<p>看着苏岚满面泪光，卑微乞求的模样，陆宇恒又一次心软，他抱住苏岚，心疼不已，“对不起，岚岚。当时也应该怪我，我不应该误会你和其他人有关系，更不该当着那么多人的面羞辱你。”陆宇恒有些泄气，更像是认栽，“可是我太笨了。我怕我又是最傻的那一个，所以我才说那些气话的。”</p>
+<p>苏岚哭着低下头，将头埋进陆宇恒坚实宽阔的胸口，“那些都不重要了，宇恒，这大半年来，我一直都很想你。还有苏谈，他也一直想和你团聚。他这半年一直闷闷不乐，直到我前几天告诉他要来上海见你，他才高兴起来。”</p>
+<p>“这家伙还记得我吗？！”陆宇恒放开苏岚，喜笑颜开地问。</p>
+<p>“嗯，我们都很想你。”苏岚亦破涕为笑，“我们一家人晚上一起吃个饭吧。”</p>
+<p>刚说出那句话，苏岚就发现自己逾越了，“一家人”这个词用在这样的三个人身上多少有些不合适。</p>
+<p>陆宇恒倒没察觉这句话有什么不对的地方，或者说，在他心里，他们三个确实已经是“一家人”，他激动地说：“那我现在去网上订个餐厅，你爱吃的淮扬菜，好不好？”</p>
+<p>苏岚摇头笑道：“就去吃炸鸡吧，苏谈好久没吃过了。”</p>
+<p>说到这里，他看见陆宇恒一脸诧异，于是立刻改口：“额，太寒酸了吗？那就吃别的……你来定吧，我都听你的。”</p>
+<p>陆宇恒连忙解释：“不寒酸，我只是惊讶，你居然肯让你弟弟吃炸鸡了。你不是一直都说那是垃圾食品吗？”</p>
+<p>苏岚笑着说：“他都大半年没吃过了，总要让他高兴一次的。”</p>
+<p>“好。”陆宇恒微笑道。</p>
+<p>那天晚上，苏岚和陆宇恒工作到很晚才下班。二人相伴走出公司，携手走在被路灯幽幽的光柱浸亮的人行路边。</p>
+<p>户外刮着冷风，连道路两旁的常青树叶也被刮得沙沙作响。</p>
+<p>苏岚走在昏暗的路灯下，这时，陆宇恒从他身后抱住他，将头埋进他温暖的颈窝中。</p>
+<p>陆宇恒头顶的软发蹭在苏岚脸上，蹭得他痒得发笑。</p>
+<p>忍了好久，他也没有要停下的意思，苏岚只好勉强地说：“宇恒，我，很痒。”</p>
+<p>听见这话，陆宇恒立刻抬起头，挠头尴尬道：“哦，不好意思。”</p>
+<p>二人默契地伸出手与对方十指相扣，双手紧扣之时，又默契地相视而笑。</p>
 
-        </div>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://nevereatsoldierlines.github.io/2023/06/18/chapter31/" data-id="clj1a0xdy0001mvwy7uml83f6" data-title="第三十一章 奔赴而来" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
 
+
+
+  
+    <article id="post-chapter30" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/06/18/chapter30/" class="article-date">
+  <time class="dt-published" datetime="2023-06-18T10:15:42.000Z" itemprop="datePublished">2023-06-18</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/06/18/chapter30/">第三十章 身安不如心安</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>二零二零年最后一天晚上，苏岚与陆唐约在一家中餐厅相见。</p>
+<p>苏岚从陆唐那里知道了关于陆宇恒的很多事情，包括他在家中和公司的艰难处境，他儿时的悲惨际遇，以及，他走前是如何为苏岚筹谋打算的。</p>
+<p>直到听到这些，苏岚才知道原来一直以阳光一面示人的陆宇恒居然默默承受了这么大的压力。</p>
+<p>陆唐告诉苏岚，陆宇恒的股份目前一直由他父亲代管，他至今都无法进入股东大会。</p>
+<p>在上海分公司那边，各个部门官官相护，他这个总经理几乎快要被架空。</p>
+<p>家中更是危机四伏，父亲打压，继母针对，继弟跋扈。</p>
+<p>如今，表面光鲜的陆宇恒，他的地位却是岌岌可危。</p>
+<p>说到此处，陆唐长长地叹了口气，他凝望着窗外正在幽暗灯光下消融着的积雪，哽咽着说：“如果有人去帮他一把就好了。”</p>
+<p>苏岚叹了口气，皱眉问道：“陆叔，如果我现在去上海分公司，应该可以帮到宇恒吧？我知道在上海分公司那边，研发部也是公司的核心部门之一，只是囿于分公司研发部的规模不大，因此那边主要是做这边分派的任务。我现在过去提振分公司研发部，既可以打断那边部门之间相护的链条，稳固宇恒的地位，又能让公司更上一层楼。”</p>
+<p>看着陆唐惊讶的神情，苏岚释然地笑着说：“他家里那边，我也能帮上一点，我一个人生活了十年，对于人情世故也算有些经验，我可以帮他对付那些怀有异心的人。”</p>
+<p>说至此处，苏岚低下头，轻笑一声，刚刚这番话，他是以什么立场说出来的呢？</p>
+<p>经过这半年多的相处，陆唐已经把苏岚看作忘年之交，听着他的打算，陆唐担心他当局者迷，看不清形势，便不计前嫌地与他分析利弊：“话是这么说，可那边的研发部规模只有小几十个人，你过去不是屈才了吗？那边研发部能开的工资肯定不及这边，加上上海那边消费更高，你在那边还没有房子。对了，还有，你这边的房子每个月还要还大几千的房贷。”</p>
+<p>陆唐面容忧戚，他担心道：“而且，你要过去切断部门相护的链条，也会得罪不少人。更何况，宇恒家里的情况复杂，那些人恐怕不是你能对付得来的……这一切压在你身上，你能受得了吗？”</p>
+<p>苏岚如释重负地笑了一声，低着头道：“陆叔，您不用担心我。我平时比较节俭，在那边也花不了多少钱。这半年工资涨了不少，我也攒了不少积蓄，这些积蓄暂时也够我还这边的房贷了。至于得罪人，想要做成事，没有不得罪人的，我本来就不爱和人深交，得罪几个互不相识的人也不是什么大事。”</p>
+<p>其实相比于经济和生活上的压力，这段时间，苏岚心理上的压力才更加蚀骨摧心。</p>
+<p>哪怕他刻意想要忘记陆宇恒，可他家里、公司里都有太多陆宇恒曾经留下的痕迹，他根本忘不掉这个男人。</p>
+<p>有时候苏岚在想，陆宇恒是不是故意在这些地方留下这么多痕迹，好让自己忘不掉他呢？</p>
+<p>陆唐问道：“为了宇恒的路可以更好走，调去那边，真的值得吗？”</p>
+<p>虽然希望陆宇恒能得到帮助，苏岚的心机和手段也确实能给他帮助，但陆唐并不希望为了自己的侄子而牺牲苏岚。</p>
+<p>这段时间和苏岚相处，陆唐发现他并非仅仅是一个工于心计，八面玲珑的职场老手，他身上也有很多亮点，他也有善良温柔的一面。这半年相处下来，他终于明白陆宇恒走的时候对他说的“工于心计却很善良”到底是什么意思了。</p>
+<p>苏岚听见这话，微笑着抬起头，然后坚定地点头：“值得。宇恒调离重庆前将研发部总监的位置留给我，他对我有恩，知恩图报，是我做人的准则。何况，他是陆宇恒，我做了很多对不起他的事情，我对他更有愧。”</p>
+<p>更何况，我喜欢他那么多年了，我对他还有情。</p>
+<p>听他这么说，陆唐甚觉欣慰。但很快他又想起另一件事，他双手扣在桌面，思前想后，不知道该不该说出这件事情。</p>
+<p>告诉他，他可能会打消去上海的念头，陆宇恒就要继续孤立无援；不告诉他，陆唐又担心会害了他一辈子。</p>
+<p>直到苏岚见他神色凝重，似乎是有什么难言之隐，问道：“怎么了？陆叔您有什么话要跟我说吗？”</p>
+<p>陆唐担忧地看向苏岚，见他平静的表情，这才勉强开口：“我……我大哥以个人的名义在浦东承包了一块地，委托一家建筑公司在那里建了一座写字楼，很快就能投入使用了。”</p>
+<p>苏岚没明白陆唐的话是什么意思，但还是隐约觉得陆永的举动并不简单，他正襟危坐，神情严肃地问道：“陆叔，您这是什么意思？”</p>
+<p>陆唐解释道：“大哥可能是有想要将公司总部搬迁到上海的打算。这段时间，他动作越来越快，公司不少部门都搬去了上海，他又在浦东建了一座写字楼，他可能是有架空岳家在公司的势力的想法了。岳家是宇恒的靠山，”说到这里，陆唐凝眉咬牙，沉痛不已，“我大哥一直不太喜欢宇恒，这次又这样私下动作，我猜，他可能是有想要让宇广继承琥珀和玉髓的打算了……</p>
+<p>“宇恒半年前就发现了大哥动作，大概猜到了他的目的，所以那时候他主动去了上海。”</p>
+<p>苏岚一直以为陆宇恒去上海分公司是恨自己，厌恶自己，听见陆唐的解释，他反而松了口气，至少他们的关系还没有到难以愈合的地步。苏岚笑着说：“我知道了。”</p>
+<p>见苏岚丝毫不为自己刚刚说的话所动，临危不乱的模样，陆唐疑惑道：“你不怕吗？万一你过去，卷入我们陆家的争斗，可能会伤到你自己……”</p>
+<p>苏岚笑道：“正是因为我害怕，我才更要去。宇恒心思单纯，他现在面对的困难，心里的压力只会比我更多。我要去帮他，士为知己者死，宇恒为我做的一切，我也是时候报答了。”</p>
+<p>听他这话，陆唐诚心诚意地举着酒杯，站起身，钦服而内疚地说：“我敬你一杯，多谢你愿意为我侄子做出这么大的牺牲。之前是我误会了你，是我不对，这杯酒就当作是我给你道歉。”</p>
+<p>苏岚急忙站了起来，与陆唐碰了一杯。他喝下那杯酒，释然道：“陆叔您不必道歉，当初，我们都是站在各自的立场，为了各自的利益，没有谁对谁错。”</p>
+<p>陆唐看着苏岚坦荡的表情，笑着点了点头，不由得佩服起他的胆识和魄力。</p>
+<p>交代完这边的一切，苏岚的调岗令也下达到上海分公司的研发部。</p>
+<p>苏岚即将在二零二一年一月二十号正式入职上海分公司，成为上海分公司研发部的总监。</p>
+<p>那边研发部的总监龚尤则被调来总公司，当起了总公司研发部的技术经理。</p>
+<p>而此前研发部的总监职位则由先前研发部的技术经理林源担任。</p>
+<p>前上海分公司的研发部部门总监在十八号晚上来到重庆，与林源交接总公司的工作。</p>
+<p>向林源和龚尤交代完工作之后，苏岚单独请林源吃了顿饭。</p>
+<p>点好了菜，苏岚喊来服务员，微笑着将菜单交给服务员：“麻烦了。”</p>
+<p>服务员接过菜单，离开了厢房。</p>
+<p>看着面带微笑的苏岚，林源感激道：“岚岚，多谢你了。”</p>
+<p>苏岚愣了一会，随即释然道：“没事，其实我也是为了自己。”</p>
+<p>服务员上菜期间，林源试探着问：“岚岚，你为什么要主动调去分公司呢？是，为了陆总吗？”</p>
+<p>苏岚尴尬地抬起嘴角，嘴中溢出一声无奈的叹息，然后轻轻点了点头，“是，我过去主要是为了帮陆总。”</p>
+<p>林源叹道：“其实，陆总和你之间的事情，我们大概也知道一点。”</p>
+<p>苏岚脸色微红，不免惊讶，林源是怎么知道他和陆宇恒的事情的？他和陆宇恒的交往可以说是谨慎，从来不曾在人前有过任何过密的举动，林源是怎么发现他们的秘密的？</p>
+<p>“你们一定是很好的朋友吧？”林源又问。</p>
+<p>苏岚这才松了口气，他笑着点头，“是。”</p>
+<p>这时，两碗开水白菜上了桌，分别摆在了他们的面前。</p>
+<p>林源伸出筷子夹了一片白菜，放进嘴里细嚼了两口，然后说：“我们几个好朋友其实一早就看出来了。不管是陆总一开始无来由的针对，还是你们后来的默契合作，还是陆总临走前向上头提出的让你做研发部总监的提议，我们都能看出来，你们是关系很好的朋友。现在陆总在上海分公司那边不好过，你能过去也好。不管是工作上，还是生活中，你都能给陆总不小的帮助。”</p>
+<p>苏岚眼神飘忽，微笑道：“我的总监的位置也是他让给我的，没有他，我也坐不到这个位置。知恩图报，是我应该做的。”</p>
+<p>苏岚将一切爱意都伪装成感激，用自己完美的表演能力将这份感激表现在林源面前。</p>
+<p>林源若有所思地点了点头，微笑着说：“你说得对，知恩图报。你放心，以后你有什么困难，我也一定会尽力帮你的。”</p>
+<p>说罢，他举起酒杯。</p>
+<p>苏岚和他碰了一杯，喝下酒，道：“你管好研发部，就是对我最好的报答了。我走了之后，不要让研发部再像之前一样腐朽了，让他们少做一些投机取巧的事情。研发部是公司前几年才从技术部分拆出来的年轻部门，绝对不能变成其他部门那样腐朽的模样。”<br>林源若有所思地点了点头，“好。”<br>“我知道大家害怕自己会被公司优化，我和宇恒会尽力为技术岗员工争取更好的待遇的。”</p>
+<p>林源点头道：“好，谢谢你。”</p>
+<p>两人聊了很久，关于生活方面的，关于工作方面的，从前没有契机、没有立场聊的事情，他们都聊了一遍。说话间，大部分菜已经上了桌，两人吃完饭后，苏岚亲自给林源舀了一碗饭后甜汤，交到林源手上。</p>
+<p>“谢谢。”林源伸出双手，接过苏岚给他递过去的汤碗。</p>
+<p>“不客气。”苏岚笑着说。</p>
+<p>“你知道袁裴的消息吗？”苏岚突然问起了关于袁裴的事情，“他现在还有和你联系吗？”</p>
+<p>“是去年年初辞职的运维，袁裴吗？”林源问。</p>
+<p>苏岚点头：“是。”</p>
+<p>林源尽自己所知回答：“我听说他辞职之后去了一家还没上市的小公司，那家公司好像倒闭了。他离开琥珀之后再也没和我联系过，他现在怎么样我也不清楚。”</p>
+<p>苏岚了然于心地点了点头，然后从口袋中拿出一张名片，交给林源，“我想麻烦你去联系一下袁裴，如果他没有更好的工作，你就把这名片交给他。”</p>
+<p>林源接过名片，看了一眼名片上的信息，他问：“这是……”</p>
+<p>苏岚笑着说：“这是我的本科校友，他南洋理工研究生毕业后回北京开了一家公司。公司发展了四年，初具规模。虽然不能和琥珀相较，但是对于一个技术人员的发展来说也足够了。”</p>
+<p>林源摇了摇头，默默感叹，顶尖学校的学生，人脉就是不一样。他将名片仔细地放进口袋，说：“好。不过，你为什么要特地动用人脉帮袁裴？”</p>
+<p>苏岚叹气道：“他是被我和宇恒的私人纠纷波及才辞职的，我心里有愧。”</p>
+<p>林源感慨道：“岚岚，你真是个好人。”</p>
+<p>苏岚尴尬地笑了笑，“好人”这个词被用在自己身上多少有些讽刺。</p>
+<p>夜幕降临，餐桌上的菜都被尝了个遍，终于还是到了饭局结束的时候。</p>
+<p>苏岚最后叮嘱道：“还有，下个月就过年了，这个月的服务器维护检查工作就暂停一下吧，等过完年再来做。研发部去年经历了那么大的变革，也需要好好调息了。”</p>
+<p>林源点头道：“好，我知道。”</p>
+<p>苏岚微笑着站起身，张开双臂，“那就以后有缘再见了。”</p>
+<p>林源眼角含泪，笑容逐渐凝住，他慢慢拉下嘴角，嘴中呼出滚热的湿气——他哭了。</p>
+<p>苏岚笑着拍了一下林源的肩膀，开玩笑般说：“别这样，你比我还大不少呢，难不成还要我安慰你？那也太奇怪了。”</p>
+<p>见林源许久不和自己拥抱，苏岚看着林源，挑起眉，摆了摆手，用故作轻松的语气掩饰内心不舍的情绪，说道：“喂，我都张开怀抱这么久了，胳膊都酸了，你还不来和我拥抱一下？”</p>
+<p>林源尴尬地擦掉眼泪，笑着点头，然后抱住苏岚，他擦着眼泪，哽咽着说：“岚岚，我会想你的。你这一走，不知道什么时候才能再见了。”</p>
+<p>苏岚拍了拍林源的后背，忍泪笑道：“傻瓜，天下无不散的筵席，何况我们只是去不同地方工作而已，以后还有很多机会再见的。”</p>
+<p>林源抱紧了苏岚，哽咽着说：“好，有缘再见。”</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://nevereatsoldierlines.github.io/2023/06/18/chapter30/" data-id="clj1a0xdt0000mvwy113v5u69" data-title="第三十章 身安不如心安" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-chapter23" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/06/12/chapter23/" class="article-date">
+  <time class="dt-published" datetime="2023-06-12T15:15:56.000Z" itemprop="datePublished">2023-06-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/06/12/chapter23/">第二十三章 高虎入网</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>解释一下那个视频为什么会被判定为违规文件：</p>
+<p>一般网盘（比如百度网盘）的判定违规的规则：1、通过判断上传文件的MD5值来判断文件是否是同一个文件的；2、对于视频违规文件而言，一般会对其进行帧分解，对视频每一帧进行检测，如果某一帧画面出现了和训练模型一样的违规动作，就会将文件标志为违规文件或进入人工审查阶段后再行确认。<br>MD5:世界上所有文件都唯一对应了一个MD5值（同一个MD5值有可能对应不同文件，但概率极低，几乎为0），当某一个文件被标记为违规文件后，与其MD5值相同的所有文件都会被标记为违规文件。MD5值长度为16字节（128比特），仅与文件对应的二进制存储文件相关。<br>这就是苏岚赢下这一局的关键。首先让高虎离开家，无法在家里的电脑上操作发出视频，他再格式化高虎的手机，并让高虎上传到网盘的文件变为违规文件。这样高虎手上所有的文件他都无法使用。<br>当然，世界上网盘种类千千万，这样的方式不可能真正做到绝迹，只能说尽量，而且毕竟不是现实（本文并非现实向）。</p>
+</blockquote>
+<p>高虎道：“我当然知道，不过，那又如何？”</p>
+<p>他得意地笑了起来，两排黢黑发臭腐烂的烂牙露了出来，一张油腻的灰脸上布满了条条皱纹，看得苏岚一阵阵犯恶心，恨不得兜着拳头给他两拳。</p>
+<p>高虎捂着肚子，笑着说：“你不给钱，我就和你撕破脸。反正我高虎是个没脸面的，我死不死无所谓，倒是你们陆总金屋里藏的那个，和你一路货色的美男子，不知道他有没有所谓啊？哈哈哈。”</p>
+<p>高虎恶心的嘴脸愈发嚣张，不过显然苏岚比陆宇恒冷静得多，并不在乎他这样挑衅。</p>
+<p>苏岚浅呼吸调整了一下情绪，只是笑了一声，看了一眼高虎的手机屏幕，便不紧不慢地提示：“您的软件下载完成了。”</p>
+<p>高虎握紧手机，嗤笑道：“如果你不给我那些钱，我立刻就把你们陆总的视频发到网上！让大伙看看你们陆总是个什么样的人！”</p>
+<p>“请你现在就发。”苏岚笑说。</p>
+<p>高虎得意地打开网盘软件，正准备下载自己之前上传的文件，却发现提示文件内容违规无法下载。</p>
+<p>他的心悬在悬崖边，脑袋嗡嗡作响，怎么也想不明白为什么会变成这样。</p>
+<p>“为什么会变成违规文件？”高虎自问自地说。</p>
+<p>苏岚喝了一口咖啡，冷笑一声，讥问道：“你不是要将视频发出去吗？”</p>
+<p>高虎皱着眉，瞪大眼睛看向此时冷静从容的苏岚。</p>
+<p>高虎隐约觉得有什么不好的事情将要发生，但还是强装镇定，他握紧手机，尽力平稳语调道：“你别得意，我电脑上还有那视频，我回去就把那个视频发出去！我会让你付出代价！”</p>
+<p>“哼，”苏岚放下手中的咖啡杯，骨节分明的修长手指从杯把中抽出，冷笑道，“那请你现在就回去。不过，恐怕你见到的不是钱或者那段视频，而是警察。”</p>
+<p>——苏岚在来之前就报了警，约高虎出来就是要调虎离山。</p>
+<p>警察早在接到报警电话后就跟着陆宇恒一起去了高虎家，还有他的手机维修店，将他家中所有电子设备全部缴获。</p>
+<p>现在，警察马上就要赶过来了。</p>
+<p>看见高虎强装镇定的表情已然全盘崩溃，连下颌都止不住地颤抖，他讥讽道：“怎么？你不愿意回去？再不回去，你恐怕永远也回不去了。”</p>
+<p>说罢，他看着高虎恐惧的表情，勾起嘴角，得意地笑了。</p>
+<p>在警察来之前，苏岚选择让高虎死个明白：</p>
+<p>“首先，我并不在乎所谓名誉和脸面。所以你那个视频本质上就无法对我造成根本性的伤害。</p>
+<p>“还有，您恐怕不知道网盘对文件是否违规的判定准则。的确，您修改了文件的后缀能让文件变成一堆乱码，能让网盘无法识别文件是否是违规文件。但是你别忘了，我手上也有这样的文件。只要我将原文件上传到各大网盘，那么网盘只要通过判定我的文件违规，这个内容的文件就会被网盘标记为违规文件，这也就间接封锁了你的文件。”</p>
+<p>听这话，高虎愣了几秒，突然反应过来——他就是那个视频里的人？</p>
+<p>他后知后觉地想起那个视频里婉转承恩，娇媚求欢的那个人声音和此人十分相似，只是视频中的男人发出的声音千娇百媚，这才让他一时没有发觉。高虎暗恼，难怪自己一开始就觉得他的声音好像在哪里听到过……</p>
+<p>可高虎怎么也想不到，在那视频里骚动不安地撒娇发嗲的男人是他，在这里冷静优雅却不怒而威的男人也是他……</p>
+<p>苏岚微笑着看着高虎此刻慌乱的表情，笑着给他最后一击：“最后，我在来之前，以及来之后都给了您不止一次机会。是您为了眼前的利益，放弃了这么多次唾手可得的机会。陆总曾说过如果你肯就此打住，放弃继续索要钱财，陆总会放过你——可是你没有。”</p>
+<p>苏岚拿出录音笔，停止录音。</p>
+<p>“我已经通过录音收集了你敲诈勒索的证据。还有你让陆总写的欠条，也是你敲诈的证据。警察在我来之前，就已经带着搜查令去了您的家里。”</p>
+<p>苏岚看了一眼手表，依然用淡然的口吻不紧不慢地说：“看时间，警察马上就要来了。”</p>
+<p>看着高虎慌乱的模样，苏岚冷笑一声，道：“高先生，您不是说过，您不在乎您的自由和生命吗？既然您这么不在乎，那您就在监狱里用余生好好忏悔这些年你犯下的错误吧。”</p>
+<p>高虎猛吸一口凉气，原来这人早就有所准备了，来这里只是为了给自己设下一个圈套！</p>
+<p>这时，门外响起了警笛声。高虎诧异地看着门外驶来的警车，他知道自己已经输了。</p>
+<p>他咬牙切齿地看向苏岚，见他脸上表情竟是轻蔑不屑，心里更是燃起一团怒火。</p>
+<p>他拿起桌子上的刀叉，正准备出手和苏岚鱼死网破，就被苏岚看穿了他的意图。</p>
+<p>苏岚迅速捉住高虎的肘弯，猛地使劲，然后将他反手扣在桌子上。</p>
+<p>警察走了过来，擒住高虎，带走了苏岚的录音笔，对苏岚说：“多谢你配合我们完成任务，你放心，他从受害者身上敲诈得到的钱，我们会尽力归还。”</p>
+<p>“好，多谢警察先生。”苏岚微笑弯腰，与警察道别。</p>
+<p>看着还不肯就范，被警察强行戴上镣铐，推搡着往前走的高虎，苏岚蔑笑一声，朝着他的方向自言自语道：“就凭你这种角色，也想和我斗？”</p>
+<p>苏岚提起桌子上的箱子，不顾围观群众异样的眼光，走到正在收银台看戏的收银员那里，将整个箱子交给收银员，“我点的咖啡和食物一共三百七十三，这箱子里面有两千块，都给你了。剩下的钱就当是借你们这里搭了个戏台子，赔偿给你们的。”</p>
+<p>收银员刚刚还低咒这几个人把自己店里搅得乱七八糟，一收到这两千块钱，立刻喜从天降，感激不尽，差点被这大帅哥阔绰的出手感动得热泪盈眶。于是她不停点头，点头道谢：“多谢您，多谢您！”</p>
+<p>“不客气，再见。”苏岚脸上没有表情，只丢下这句话就往外走了。</p>
+<p>外面雷声大作，乌云覆顶，像是要下一场大雨。</p>
+<p>从咖啡馆走出来，看见正挣扎着不肯进入警车的高虎，苏岚笑着走过去，抓住他的手臂，挑眉道：“你已经输了，就不要再挣扎了。你还是好好想一想你下半辈子该如何在牢里度过吧。”</p>
+<p>“你这个阴险小人！骚货！你这个求着男人肏屁眼的死gay！”高虎已经输得一败涂地了，见自己无翻盘的可能性，干脆毫无顾忌地骂上几句。</p>
+<p>苏岚毫不在意这种言语羞辱，只是冷冷地看了他一眼便转头对警察说：“警察先生，不知道我是否能和他说一会话？”</p>
+<p>几位警察面面相觑，然后达成了共识，点了点头。</p>
+<p>领头的警官说：“可以，不过不要太长。”</p>
+<p>“好，多谢。”苏岚微微弯腰，然后直起身子看向高虎。</p>
+<p>他歪着脖子，不可思议地看着高虎，问：“为什么？陆总对你仁至义尽，为什么你还要咄咄逼人？”</p>
+<p>高虎轻蔑地笑了一声，将头扭向一旁，并没有回答。</p>
+<p>苏岚失望地问：“四年前，陆总刚回国。为了帮你开你那个维修店，他找了多少朋友，托了多少关系，才帮你在那个寸土寸金的地方揽下了一块店铺？不提这些，光是他借给你的那三十多万，你又还了多少？”</p>
+<p>高虎没回答，喘着粗气，脸上横肉不断颤动。</p>
+<p>他并没有忘记那些事情，他只是认为帮助自己对于陆宇恒这个家财万贯的公子哥来说只不过是举手之劳，因此自己根本不用感激。</p>
+<p>见他不作声，苏岚又问：“陆总对你们这几个朋友算是尽心尽力吧？你呢？在你的眼中，陆总从来都不是你的朋友，只是一个可以被你利用的工具吧？四年，你四年才零零总总还上二十万，陆总可有向你讨过债？”</p>
+<p>“不对，不是二十万。”苏岚抬手否决自己刚刚的说辞，他仔细思考，然后分析道：“陆总吃你一顿饭，你在那三十万里扣掉三百；喝你一瓶水，你在那三十万里扣三十；陪你聊会天，你也要算他误了你的工，把‘损失’都算上……真正还上的哪有二十万？陆总请你吃的饭，他可有算在你欠的账上了？陆总的工作耽误了，他可有找你要过一分钱补偿？”</p>
+<p>苏岚见他脸色似无半点愧疚，失望摇头，“你的心就那么狠吗？三十万打赏一只狗，狗都会朝着它的主人逢迎地叫唤两声，替主人赶走外敌。你呢？吃着陆总的饭，却反过来咬他一口。”</p>
+<p>说到此处，苏岚攥紧拳头，他放大了声音，怒问：“你也算是个人吗？”</p>
+<p>高虎一脸不屑，一个字也不肯回答。</p>
+<p>他这个态度连警察都看不下去了，他们手上略微多用了一点力气，放声道：“说话呀！问你话呢，你算不算个人？”</p>
+<p>高虎内心素质甚是强大，到了这种人人喊打的地步，居然还能处之泰然。</p>
+<p>他瞪了一眼刚刚用力攥他胳膊的警察，然后扭头看向苏岚，不卑不亢地说：“你们陆总家大业大，哪在乎我这三十万？”</p>
+<p>“哼，你真是没得救了。”苏岚低下头，蔑笑一声，“家大业大也不是你刻意算计他、伤害他的理由。你就等着被法律制裁吧。”</p>
+<p>见他转身要离开，高虎突然着急了，他大声说：“我有白血病，我没钱治，所以我才……你们有钱人哪知道我们没钱的人的苦！”</p>
+<p>苏岚停了下来，并没有回头，也并没有同情他，只是背对着那人，冷默而平静地说：“没有一条法规可以为白血病人减刑。世人皆苦，唯有自渡。可怜，从来都不是害人的理由，更无法为犯罪行为开脱。”</p>
+<p>苏岚迈脚离开，在嘴里细数高虎的罪责：“敲诈勒索、传播淫秽物品、寻衅滋事、故意伤人……你说你会被判多少年？”</p>
+<p>“你这个小人！你不得好死！”高虎见他背影渐渐消失，大声怒骂。</p>
+<p>警察互相看了一眼，竟然都从对方眼里看出了不屑。他们摇了摇头，拽着高虎往警车上拖，无奈地说：“快别在这里丢人了，跟我们回去吧。”</p>
+<p>……</p>
+<p>苏岚平静地往前走，重重地舒了一口气。</p>
+<p>他想起从前自己做的那些事。是他间接害得陆宇恒在牢中度过了两年；是他利用陆宇恒的单纯为研发部整治腐蠹，保住自己的工作……</p>
+<p>高虎有罪，自己也有。</p>
+<p>即便法律不能判处他任何刑罚，可在他的内心，他早已遭受过无数遍凌迟。</p>
+<p>苏岚决定诚心诚意地说出所有的事情，坦白自己所做的所有错事。不论陆宇恒是要如何报复，他都心甘情愿地伏罪。</p>
+<p>至少，不要再日日承受这样蚀骨锥心的自责之痛，内心也不用再接受这凌迟般的酷刑。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://nevereatsoldierlines.github.io/2023/06/12/chapter23/" data-id="clit01glm0001mlwy3xzj0moj" data-title="第二十三章 高虎入网" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-chapter22" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/06/12/chapter22/" class="article-date">
+  <time class="dt-published" datetime="2023-06-12T15:15:48.000Z" itemprop="datePublished">2023-06-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/06/12/chapter22/">第二十二章 苏岚对峙高虎</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>苏岚通过陆宇恒给他的联系方式联系到高虎，他笑着同高虎打招呼：“喂，您好，是高虎先生吗？”</p>
+<p>那边迟疑了一会，然后怒气冲冲地大骂道：“老子不买特效药！滚！”</p>
+<p>苏岚急忙笑着说：“不是，我不是推销药品的，我是陆总的助理。陆总预备明天将欠您的钱还给您，所以约了您明天八点在巴蜀路的天山咖啡馆见面。不知道您明天是否有空呢？”</p>
+<p>苏岚声音低沉性感，语气沉稳中带着一丝慵懒，竟让高虎听得有一丝沉醉。</p>
+<p>高虎愣了许久，觉得这声音像是在哪里听过，可是又想不起来究竟是谁的声音。</p>
+<p>他想，可能是某个男主播吧，毕竟这种男低音听起来都是差不多的。</p>
+<p>想到这里，高虎不免心想：看来，陆宇恒这家伙身边不少这样的货色嘛？</p>
+<p>难怪以前他们几个兄弟要去找女人的时候他总是不愿意，说什么“吾辈当自强，不能沉缅于女色”之类清醒的话，原来是天生喜欢男人！</p>
+<p>高虎窃喜，没想到，前几天陆宇恒这家伙才给自己五十万，没过几天，他又筹到钱了。还真不愧是富家子弟啊。看来自己的病情还有以后的日子都有着落了。</p>
+<p>苏岚催促道：“高虎先生，请问，您明天有时间吗？”</p>
+<p>高虎这才反应过来，忙道：“哦哦，有，我随时有空！”</p>
+<p>苏岚笑着说：“好，那就明天见了。”</p>
+<p>当天晚上，苏岚亲自开车去学校接上苏谈，带着他回家。</p>
+<p>原本苏谈高高兴兴地跟着哥哥上车，但车开到半路，他才发现这不是去陆宇恒家里的路。于是他委屈地撇着嘴，一双细腿来回晃悠，嘴里不停嘟囔着“宇恒……哥哥”。</p>
+<p>苏岚见他这么喜欢陆宇恒，不免有醋意，他戏谑道：“谈谈这么喜欢宇恒哥哥，就去宇恒哥哥家里住吧，哥哥一个人住家里，好不好？”</p>
+<p>说到要和哥哥分开，苏谈立刻闭上嘴，眨了眨干净的大眼睛，鼓着嘴倒在苏岚腿上，抱着哥哥大腿，脑袋不停在苏岚腿上攒动摩擦。</p>
+<p>比起宇恒哥哥，他还是更喜欢自己的哥哥。</p>
+<p>苏岚见苏谈委屈可爱的模样，忍不住笑了出来，他伸手搓了一下苏谈的头发，然后继续开车往家的方向去。</p>
+<p>第二天八点，苏谈提着箱子，准时来到天山咖啡馆。</p>
+<p>走到咖啡馆门口，苏岚停下脚步，借着玻璃门当全身镜，整理了一下仪容。</p>
+<p>确定在气势上不会输给对方，脸上容光焕发后，苏谈才昂首微笑着走进店内。</p>
+<p>看见高虎，苏岚走了过去。他微微弯腰，自信笑道：“高先生，您好。”</p>
+<p>“你是……”高虎一时没反应过来，他仰着头仔细打量着苏岚。苏岚笑着说：“您没见过我，但我们昨天傍晚通过话。我在陆先生与您的合照中见过您，所以认得您。陆总有公务在身，抽不开身，所以委派我来与您处理你们之间的事情。”</p>
+<p>高虎上下打量着苏岚。见他身形修长，一双细腿劲瘦有力，宽肩细腰，手臂健壮，一具强健的身体，哪怕是束在西装里，那强大的力量感也丝毫没有收敛。</p>
+<p>与这健壮体格相配的却是一双清澈漂亮的眼睛，那一对黑眸深邃如坠满星光的夜空。剑眉星目，鼻梁高挺，下颌线分明，一对薄唇红润漂亮。</p>
+<p>这张英俊却并不阴柔的脸竟然让他这个男人也觉得有些沉醉。</p>
+<p>高虎笑了一声，心想陆宇恒身边恐怕都是这种货色，看来他这样的有钱人还真是艳福不浅。</p>
+<p>苏岚见他打量自己，并不胆怯，他坐了下来，笑着问道：“高先生还没吃早饭吧？要不要随便吃一点？”</p>
+<p>原本高虎来咖啡厅的时候打算吃点什么，可没想到这里连一杯咖啡都能要一百多，于是就打消了这个念头。</p>
+<p>正好有人愿意来当这个冤大头，那自己何乐而不为呢？高虎笑道：“都行。”</p>
+<p>苏岚微笑着点头，然后喊来服务员，微笑着对服务员说：“一个三明治，两杯拿铁。”</p>
+<p>“好的。”服务员撕下手上的便签，弯了弯腰便去了吧台。</p>
+<p>服务员走后，苏岚拿起手中沉甸甸的箱子，放到桌面。</p>
+<p>高虎看见这一大箱钱，两眼放光，他瞪大了双眼，凑着身子，迫不及待地问：“这就是陆总要给我的吗？”</p>
+<p>“是。”苏岚打开箱子，里面一水的都是百元面额的纸币，“这里面一共二百一十万。”</p>
+<p>高虎刚伸手准备去拿，苏岚就合上箱子，微笑着说：“请问，陆总之前写给您的欠条还在吗？”</p>
+<p>“在的，在的。”高虎奉承道。</p>
+<p>“那不知道可否请您将欠条交给我？”苏岚直视高虎，眼神凌厉，气势镇定。</p>
+<p>高虎被苏岚的气场吓到，擦了擦脸上的汗，陪着笑脸说：“不急，我回去清点一下数目，确定数目无误，我就会自己销毁欠条。”</p>
+<p>“好的。那么视频……”苏岚眨了两下眼睛，嘴角微微抽动，但这些细微的变化落到高虎眼里依然是面不改色。</p>
+<p>“当然可以。”高虎拿出手机，解开手机的屏幕，将相册里的视频都删了之后将手机屏幕亮到苏岚眼前。</p>
+<p>苏岚趁着高虎还未关闭手机屏幕，迅速夺过手机，然后说：“这视频，陆总吩咐我一定要亲自销毁。”</p>
+<p>说完，苏岚输入他亲自看见的密码，将手机相册里的照片全部删除，然后将手机格式化后交回高虎手中。</p>
+<p>这时，服务员将咖啡和三明治送了过来。</p>
+<p>不过高虎可顾不上吃这个，两眼放光地搓了搓手就急忙虔诚地打开箱子。</p>
+<p>“好了，我的任务已经完成了，我也该回去复命了。”苏岚喝了一口咖啡，微笑着站起身。</p>
+<p>苏岚刚刚转身，便被高虎拽住了自己的西装。</p>
+<p>他微笑着回头，看向高虎，不屑地冷声问道：“有什么事吗？”</p>
+<p>“你自己看！”高虎随手拿起一沓钞票，将那一沓“钞票”亮到苏岚眼前——那所谓的一沓钞票，不过第一张是百元纸币，剩下的全部都是白纸！</p>
+<p>苏岚轻笑一声，说：“那又如何呢？”</p>
+<p>高虎摔下手上的一沓子纸张，怒问道：“你们陆总呢？让他来！我倒要看看我手里的这个视频值不值三百万！”</p>
+<p>苏岚大笑道：“哈哈，您手里还有视频吗？”</p>
+<p>高虎愣了一会，但马上又摆出一副胸有成竹的模样说：“你以为删了我手机里的视频，就万事大吉了？哈哈，”高虎摆了摆手指，甚为自信地说，“你错了！”</p>
+<p>苏岚转头问：“不知道我错在哪里？”</p>
+<p>“坐下吧，我怕你这一失误，抱憾终身呐！”高虎坐回原位，如同胜券在握，得意地说。</p>
+<p>苏岚并不气恼，优雅地坐下之后，叮嘱道：“高先生，陆先生派我来，就是希望可以给您最后一次机会。这真的是最后一次机会了。”</p>
+<p>“这不是我最后一次机会，而是你们最后一次机会。”高虎大笑道，“你最好还是找你们陆总来和我谈吧。”</p>
+<p>苏岚微笑道：“我说过了，陆总有公务在身，抽不开身，他派我全权处理这件事。”</p>
+<p>“我怕你担不起这责任！”高虎重重地拍了下面前的桌子，连桌子上的咖啡都被这一震洒出了杯子。</p>
+<p>苏岚若无其事般摊开手，耸了耸肩，问道：“我事情已办妥，不知道高先生说的是什么责任？”</p>
+<p>高虎扬起嘴角，邪笑道：“你真以为删了我手机上的文件，我就没有办法了吗？我有三个网盘账号，为保万一，每个账号我都上传了那个视频！”</p>
+<p>说至此处，他更加得意放肆。他扶着桌面，以免自己笑得倒下去，“哈哈哈！这下，你还会说你的事情办妥了吗？我告诉你，你最好把那三百万一分不少地给我吐出来，否则，我一定会让你们陆总后悔，也会让你后悔！”</p>
+<p>“高先生这是要敲诈吗？你就不怕警察来抓住你吗？陆总往日对您不薄，您为什么要恩将仇报呢？”</p>
+<p>苏岚咬牙切齿，目眦欲裂。</p>
+<p>“哈哈，人为财死，鸟为食亡嘛。你不会不懂这个道理吧？没有人会嫌钱挣得多了的。”高虎眯睛笑道，满脸都是算计。</p>
+<p>“真的要这么绝情吗？陆总已经陆陆续续给了你接近一百万的封口费了，你还贪心不足吗？”苏岚最后给了他一次机会。</p>
+<p>“不是我要对你主子绝情，而是你的主子要对我绝情。我说了，再不给钱，我可不敢保证接下来我会做什么。一百万算什么？实话告诉你吧，有这个视频在手，就算是一个亿，那也是唾手可得。”高虎得意地笑了一声，在手机上下载了网盘软件。</p>
+<p>苏岚勾起嘴角，嗤笑道：“你打开看看吧，你以为那种视频能上传到网上去吗？”</p>
+<p>高虎伸出手，摇了摇食指，自信地说：“你以为我会直接上传视频吗？我改了文件名和文件类型，在那个软件看来，我上传的可不是视频。”</p>
+<p>苏岚低头蔑笑了一声，语气变得凌厉，“高先生，这是您自己选择放弃机会的。陆总让我给您两次机会，我额外多给了您一次机会。可是您都主动放弃了。”</p>
+<p>“不是我要放弃，是你们自己。”高虎还自鸣得意，还不知道自己惹到了怎样的人。</p>
+<p>苏岚摇了摇头，为陆宇恒感到惋惜。他居然曾把这种人当做好朋友！</p>
+<p>见高虎不肯悔改的模样，苏岚怒而大喝道：“您知道敲诈勒索罪最高要量刑多久吗？还是这么大的数额，三百万！”</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://nevereatsoldierlines.github.io/2023/06/12/chapter22/" data-id="clit01glg0000mlwy8p8w64ky" data-title="第二十二章 苏岚对峙高虎" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-chapter28" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/06/12/chapter28/" class="article-date">
+  <time class="dt-published" datetime="2023-06-12T15:07:12.000Z" itemprop="datePublished">2023-06-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/06/12/chapter28/">第二十八章 雪人</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>慢慢地到了八月，夏天就这么张牙舞爪地亮出他最后的獠牙，极度的高温让苏岚在每天通勤的时候感到一阵阵眩晕，哪怕是早晨和傍晚也一样。</p>
+<p>似乎每天都是酷热的毒日头和黏腻的汗水反复叠加，苏岚也被这高温驱赶得加快了生活的节奏，除此之外，生活再无欢愉。</p>
+<p>除了有节奏的上下班，接送苏谈上学、放学，偶尔在周末的时候带苏谈去游乐场、附近的风景区游山玩水，苏岚感觉人生好像没有了其他的事情。</p>
+<p>自从当上研发部总监，苏岚的生活质量的确发生了质的改变——工资迅速涨到原来的两倍不止，工作也轻松了不少，不用每天审核各个岗位的具体工作，更不用参与进去，只需要站在统筹的位置指点指点江山，工作任务就完成了大半。</p>
+<p>可除了上涨的工资和轻松了的工作任务，他还有什么呢？生活似乎被程序写好了，每天都是死循环，固定好了要做某些事情。每天都和昨天一样，没有一点波澜。</p>
+<p>在那些迷朦的日子里，苏岚曾反复拷问自己，这样机械般重复的日子真的是自己想要的“生活”吗？</p>
+<p>＜br&#x2F;＞</p>
+<p>夏日的夜晚，苏岚经常会和苏谈一起躺在床上。他常抱着弟弟看着窗外还未被霓虹灯光掩盖住的星空和缀在那黑幕般的夜空之上的点点星光。</p>
+<p>他经常会对苏谈说起从前的事情。</p>
+<p>他会说起十年前，也是在这样的星空之下，他和宇恒哥哥一起坐在学校的草地上看着天空的星星。</p>
+<p>可那时候在学校，周围的人，包括自己，年纪都还小，心境和现在比起来天差地别。</p>
+<p>那时候的天空比现在干净，人心也不像现在一样，长得七窍玲珑。</p>
+<p>＜br&#x2F;＞</p>
+<p>苏谈这几个月懂事了很多，不像从前一样每天都想着吃不健康的食物，也不太经常主动提起“宇恒哥哥”，只是偶尔会看着陆宇恒给他买的汽车模型、毛绒玩具、变形金刚之类的东西出神。</p>
+<p>每当苏岚问起，小家伙也学会了瞒着哥哥自己的心思，只说自己喜欢这些玩具，从没有提起给他买那些玩具的那个温柔阳光的大哥哥，以及那天傍晚，那个大哥哥给自己买冰激凌，在亭下，手持冰激凌，将自己抱在腿上，喂食冰激凌的事情。</p>
+<p>因为他说：</p>
+<p>“记住，不要告诉你哥哥。”</p>
+<p>就这样，距离陆宇恒离开自己的生活也有半年过去了。</p>
+<p>这半年里，苏岚的生活回复了往常的平静如水和循环往复。在研发部内的工作，苏岚也做得如鱼得水；研发部的员工也因为苏岚的宽严并济而更有动力工作。这些，陆唐都看在眼里。</p>
+<p>确实如陆宇恒所说，苏岚这个人更懂得人心，比他更适合研发部总监的位置。</p>
+<p>陆唐先前对他的所有偏见也因为他强大的工作能力和务实的作风一一改观。苏岚平日生活的正派作风，陆唐也都看在眼里。</p>
+<p>两人甚至从之前针锋相对的对手，成了职场上的伙伴，以及职场之下、生活之中的忘年之交。</p>
+<p>＜br&#x2F;＞</p>
+<p>从春分，到立夏，又到立秋，不知不觉的，秋天已经过去，在冬至的那一天，重庆下起了冬天的第一场雪。</p>
+<p>那天，苏岚工作太忙，来学校接苏谈的时间晚了一点。</p>
+<p>从车子上下来的时候，苏岚手里抱着一个围巾，趁着路灯幽暗的光芒，跑到那个蹲在校门口的小孩身旁。</p>
+<p>在苏岚来之前，那个小孩一直蹲在校门口用手堆雪人。一双白嫩柔软的小手被冻得冰冷通红。</p>
+<p>苏岚走过来的时候，小孩护住身下的雪人，怎么也不肯走。</p>
+<p>苏岚蹲了下来，用柔软的围巾套在苏谈的脖子上，将他幼小的身躯圈在自己怀里，贴着他的脸，温柔地问：“谈谈，你在玩什么呀？”</p>
+<p>害怕哥哥生气，苏谈怯怯地说：“是……我，还有哥哥，还有……宇恒哥哥。”</p>
+<p>苏岚低头，才看见他堆的三个雪人——两高一矮，携手站在一起。</p>
+<p>那个三个雪人唤回了苏岚脑中关于那个男人的所有信息——他的笑容，他的身体，他和自己在一起的每一个画面。</p>
+<p>还有，他和自己一起，牵着苏谈走在夕阳下的温馨画面。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://nevereatsoldierlines.github.io/2023/06/12/chapter28/" data-id="cliyrjpe100033nwy5bvcei23" data-title="第二十八章 雪人" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-chapter27" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/06/12/chapter27/" class="article-date">
+  <time class="dt-published" datetime="2023-06-12T15:07:12.000Z" itemprop="datePublished">2023-06-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/06/12/chapter27/">第二十七章 苏岚升迁</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>苏岚回到家，家中一切如旧，可是人却不同了。</p>
+<p>一看到那张床，苏岚就会想起，那天晚上，他坐在陆宇恒的腿上，被他贯穿后穴，上下颠簸的画面。就连床单上，好像都留下了陆宇恒的气息。</p>
+<p>苏岚叹息，一切都变了。可是，这一切都是自己自作自受，与人无尤。</p>
+<p>自从回到家，小家伙就一直闷闷不乐的。苏岚给他买了他和陆宇恒一起玩的游戏棋，照着包装里的教程学了一遍，很快就学会了玩法，但当苏岚提出要和他一起玩游戏棋的时候，他却一脸不高兴，撇着嘴，耷拉着眼帘，推开苏岚的手。</p>
+<p>“哥哥和你玩游戏棋好不好？哥哥这两个月都不走，就在家陪你。可以吗？”</p>
+<p>“不……我，我要，宇恒哥哥……”小家伙坐在地上，委屈得快要哭了。</p>
+<p>苏岚叹了口气，站起身。</p>
+<p>这小家伙也快十岁了，可是这心智和体型却不过六七岁，这让苏岚也十分着急。想要带他去医院，他却总是抗拒。</p>
+<p>可是苏岚也知道，这件事要怪也只能怪自己，是他在弟弟还小的时候没有给他足够的照顾和营养，这才让他变成现在的样子。</p>
+<p>于是苏岚只能耐心地哄：“谈谈，你乖一点，陪哥哥玩两局游戏棋，哥哥带你去吃炸鸡汉堡，好不好？”</p>
+<p>虽然平时不让他吃这些垃圾食品，可现在也只有先顺着他的意了。</p>
+<p>谁知平时鬼精灵，总爱跟哥哥调皮捣蛋，一听见炸鸡汉堡就会高兴得把所有不高兴的事情都忘了的苏谈，在这个时候反而沉默下来。</p>
+<p>他一声不吭地摆着腿，不一会就撇着嘴小声哭了起来。</p>
+<p>见弟弟哭，苏岚赶紧放下手里的游戏棋，抱住苏谈，轻抚他的后背，自己也跟着他掉起了眼泪。</p>
+<p>苏岚自责道：“对不起，对不起。谈谈别哭好不好？都是哥哥的错。”</p>
+<p>“哇……哇……”谁知道苏岚不哄他还好，他只是委屈地掉掉眼泪，一哄他，他反而大声地哭了起来。</p>
+<p>苏岚无计可施，只好把他抱到自己房间，将他抱在怀里，轻轻颠动他的身体，像几年前一样哄他睡觉。</p>
+<p>毕竟不是两三岁的的孩子了，苏岚哄了好久，他也还是不停，一个劲地哭着喊“宇恒哥哥”。</p>
+<p>苏岚抱着他，也想起了陆宇恒。</p>
+<p>于是两兄弟干脆抱在一起哭。</p>
+<p>在哥哥怀里哭了好久，苏谈终于睡了下去。</p>
+<p>苏岚松开手，看着眼眶都哭红了的苏谈，连睡觉都在不停的耸鼻子，闭着的眼睛还在往外渗着眼泪，他心疼愧疚不已。</p>
+<p>轻轻将弟弟抱起送回他自己的房间后，苏岚守在他身边，握着他的手，说：“谈谈，对不起，是哥哥没照顾好你。”</p>
+<p>就这么握着，不知过了多久，睡着的小家伙终于安稳地睡过去，停下了耸鼻的动作。</p>
+<p>苏岚这才慢慢放开苏谈的手，准备回自己房间。</p>
+<p>谁知道苏岚一松手，苏谈就赶紧抓住他的手指。</p>
+<p>以为是他醒了，苏岚回过头，却发现他仍然闭着眼睛——原来他只是在做梦。</p>
+<p>苏岚无奈地叹了口气，原来这孩子在梦里都这样没有安全感。</p>
+<p>他蹲了下来，慢慢地、轻轻地将苏谈的手指一根根从自己的两个手指之上拨开。</p>
+<p>苏岚轻吻苏谈柔软的脸庞，谁知小家伙居然奇迹般地微笑起来，手脚也老实下来，两只小手乖乖地搭到腹前。</p>
+<p>见弟弟可爱的模样，苏岚忍不住笑出来，早知道亲他一下就能让他安静下来，也不用费那么大劲哄他了。</p>
+<p>＜br&#x2F;＞</p>
+<p>两个月的时间慢慢过去，一切都开始慢慢变化。</p>
+<p>一开始，苏谈整天思念陆宇恒，每天晚上苏岚开车去接他，他都会哭着、闹着要找“宇恒哥哥”；两个月后，终于也变回了从前安分乖巧的模样。</p>
+<p>道路两旁的参天大树的树叶，初春时期还是稀疏软嫩，到盛夏来临时，也已经开始疯狂生长，变得茂盛。</p>
+<p>而苏岚也从一开始失去陆宇恒时的不适，慢慢学会了适应，生活开始变得井井有条。</p>
+<p>刚开始那几天，每天晨起，还未睁开眼睛，苏岚就会不自觉地喊陆宇恒，直到许久没有回应，他才想起，自己已经回到家，离开了陆宇恒。</p>
+<p>后来，他慢慢改掉了每天早起都会呼唤陆宇恒的习惯——两兄弟默契到对陆宇恒的依赖几乎是同时戒掉的。</p>
+<p>两个月轻松惬意的生活终于让苏谈开朗了一些，他也学会了和同龄的孩子一样向除了哥哥之外的外界表达喜怒哀乐，学会了蹦蹦跳跳地从学校内一步一跳地跑到自己的车内。</p>
+<p>一切似乎都恢复到和陆宇恒相遇之前那样。苏岚几乎快要将陆宇恒这个人放进自己的记忆深处，再度尘封了。</p>
+<p>直到有一天，苏谈提起了一声“宇恒哥哥”，苏岚才将那个人再度从记忆深处取出。</p>
+<p>是多久之前的事情呢？苏岚细细算了一遍，发觉距离自己上一次见到陆宇恒，不过只有两个月。</p>
+<p>才两个月而已，居然就像过了好几年一样。</p>
+<p>那天晚上，苏岚抱着陆宇恒丢在自己家里的西装，痛哭了数个小时。</p>
+<p>以后，也只能做一个每天见面的陌生人了吧？</p>
+<p>六月份的某个傍晚，苏岚有些急事，去学校接弟弟的时间稍微晚了一点，到了学校的时候，已经是晚上七点半了。</p>
+<p>他在学校附近找了许久，也没找到苏谈。</p>
+<p>这小家伙一直依赖自己，自己还没来接他，他怎么会走了呢？</p>
+<p>苏岚焦急地呼唤苏谈，可怕的念头难以遏制地钻进脑中每一个隙缝，如何也无法驱逐。</p>
+<p>直到天完全黑了，在一个冰淇淋店的凉亭下看见弟弟，苏岚悬着的一颗心才终于落了下来。</p>
+<p>苏岚跑过去，抱住苏谈，哽咽地责备道：“苏谈！你怎么跑得那么远！我不是跟你说过不要离开学校吗？万一你走远了，有坏人把你拐走了，你要怎么办？哥哥怎么办？”</p>
+<p>“哥……哥哥，宇恒哥哥……”小家伙结结巴巴地叫着，推着哥哥的胸膛，试图推开哥哥的怀抱。</p>
+<p>苏岚苦笑着，“傻孩子，他怎么会来？”</p>
+<p>“宇恒哥哥……”小家伙推着哥哥，着急地跺起脚。</p>
+<p>见弟弟这么激动，苏岚以为陆宇恒真的来了，于是回过头，却并未见他。只有一个背影身形很像他的高大的男人，穿着一件陆宇恒不可能看得上的背心，在熙熙攘攘的人群中，离这个凉亭越来越远。</p>
+<p>苏岚为自己刚刚的期待感到可笑，他现在，还有什么理由和立场去期待那个男人呢？</p>
+<p>“谈谈是不是把他认错了？我知道你想宇恒哥哥了，哥哥也想他，可是……”苏岚回过头，抱起苏谈，眼泪被转身的动作甩下。</p>
+<p>“可是他不会再来了。”</p>
+<p>苏岚抱着苏谈，在路边几柱稀疏的路灯幽暗的灯光中，慢慢走回车内。</p>
+<p>……</p>
+<p>几天之后，苏岚假期结束，回到公司。</p>
+<p>一走进办公区，苏岚就被一大群人围了起来，他们个个端茶递水，殷勤得很。</p>
+<p>苏岚正好奇是怎么了，这时，同事高鸥端来一杯咖啡，奉到苏岚面前，一边小心翼翼地吹着咖啡，一边奉承道：“苏经理，来喝咖啡，小心烫。”</p>
+<p>苏岚接过咖啡，开玩笑地说：“小鸥，你这是怎么了？怎么我一来你就无事献殷勤啊？”</p>
+<p>高鸥笑着抱住苏岚，“撒娇”道：“咱们研发部上上下下以后可就全部都得仰仗苏经理您的照顾提携了！”</p>
+<p>说完那句话，高鸥照着自己的嘴巴打了两巴掌：</p>
+<p>“啊，呸呸呸，您瞧我这张乌鸦嘴，您刚升迁，我就喊了您的旧称，该打该打，晦气晦气！”</p>
+<p>苏岚正好奇他说的“升迁”是什么意思，陆唐就来了，带着他去了在公司大楼三十六层的副董事长办公室。</p>
+<p>苏岚正处于疑惑之中，陆唐面色凝重地开口，“苏经理……不，苏总，以后你就是研发部的部门总监了。研发部的工作，你也很熟悉了，就不用我多说什么了。宇恒他向公司推荐你来当这个总监的位置，我想也是出于对你的信任。你好好干吧，不要辜负他的信任。”</p>
+<p>苏岚懵了许久才问：“那宇恒人呢？”</p>
+<p>“他被调到上海分公司了，他临走前向我推荐，要让你来当这个研发部总监，你的新工卡已经做好了，你有空去取一下。”</p>
+<p>“什么？”苏岚脑袋嗡嗡作响，他还没反应过来这一切。</p>
+<p>陆宇恒他就这么走了吗？连给他做每天可以见见面，打打招呼的陌生人的机会都不给吗？</p>
+<p>“宇恒说，这个位置其实由你来当会更合适，你足够有手段，对研发部业务更加熟悉，也更得研发部的人心。不过他说，他走后，研发部还是不能再出之前的乱子，要你恩威并施。”见苏岚一直出神，陆唐问，“你，听见了吗？”</p>
+<p>苏岚心不在焉地说：“我听见了，我知道了。”</p>
+<p>“研发部是公司转型的希望，希望你好好管理部门，不要让公司，还有宇恒失望。”</p>
+<p>除了说这些，陆唐还交代了职位衔接要做的内容。</p>
+<p>最后，他说：“我跟苏总说过很多次，不论苏总要做什么事，只希望你不要泯灭了自己的良心。”陆唐看了一眼此刻正手足无措的苏岚，叹了口气，“没什么事的话，你可以离开了。”</p>
+<p>苏岚费力地弯着僵硬的脖子点了点头，然后木然地转过身，脚步虚浮地往办公室外踏去。</p>
+<p>走到门口的时候，他突然回头，再度确认：“陆董……陆总他，已经走了吗？”</p>
+<p>“是，今天早上就已经走了。”陆唐说完这句话就离开了。</p>
+<p>“哦……”</p>
+<p>和陆宇恒相处的时光像是刻印在胶片上的录像，在他脑海里轮番上映。</p>
+<p>苏岚眼前的场景逐渐变得模糊，眼神怎么也无法聚焦，他扶着办公室的门，僵直地转过身，一步一顿地往外走去。**</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://nevereatsoldierlines.github.io/2023/06/12/chapter27/" data-id="cliys5ltd0000rowy3w4mhpuv" data-title="第二十七章 苏岚升迁" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+    <article id="post-chapter26" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2023/06/12/chapter26/" class="article-date">
+  <time class="dt-published" datetime="2023-06-12T15:07:08.000Z" itemprop="datePublished">2023-06-12</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2023/06/12/chapter26/">第二十六章 生日？忌日？</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>苏岚就这样离开了，不仅带着苏谈离开了自己的生活，还离开了公司。说是请假两个月，可是两个月后他真的就会回来吗？</p>
+<p>四月二十号那天，是陆宇恒的生日。</p>
+<p>原本是打算陪苏岚一起过那个生日的，可是他就这样，悄无声息地走了——属于他的所有的东西，他都带走了；而自己给他买的所有东西，他都留在这里。</p>
+<p>一点曾经在这里待过的痕迹也不肯留下。</p>
+<p>这一次如果不是前几天苏岚还在家，他也不会花那么大的功夫做亲自做蛋糕、做蜡烛、买彩灯，准备那么多和生日有关的事情。<br>毕竟，这一天不仅是他的生日，更是他母亲的忌日。</p>
+<p>每到生日，陆宇恒总会想起母亲。</p>
+<p>一想起她是为了赶回家给自己过一个生日，才在路上出了车祸，陆宇恒就忍不住责怪自己。</p>
+<p>每一次生日不仅是在提醒自己又长大了一岁，更是在提醒他，距离母亲的离开又多了一年。</p>
+<p>直到这个生日，已经有整整十年了。</p>
+<p>十年里，陆宇恒从不曾缺席母亲的祭礼。即便只是献一束花，即便无人相伴。</p>
+<p>哪怕是在狱中的那两年，他也会向狱警申请再去看一眼母亲。</p>
+<p>而生日，这十年真正庆祝的次数却屈指可数。</p>
+<p>＜br&#x2F;＞</p>
+<p>将白玫瑰放在母亲墓碑前的那一刻，陆宇恒看见眼前那张嵌在墓碑中的那张黑白色调照片。</p>
+<p>遗照上熟悉的母亲的笑容和记忆中母亲的笑容一样温柔美丽，唯一不同的是，这美丽的笑容却被灰白色蒙尘，让他潸然泪下。</p>
+<p>他愧疚地跪了下来，朝着慈母的墓碑磕了一个头。</p>
+<p>“妈，我好想你，你在那边还好吗？”陆宇恒看着墓碑上那张温柔的笑脸，不自觉地如往常一般问出这句话。<br>可是，都十年了，一句回应也没有。人死了，怎么会回应自己呢？</p>
+<p>陆宇恒擦掉眼泪，转过身。大风呼啸，他放在墓前的那束白玫瑰也被风吹得沙沙作响。</p>
+<p>花瓣一瓣瓣被风剥离花枝；直到某个时刻，花束被大风吹散，花枝和花瓣四处飞扬。</p>
+<p>吃完晚饭，点燃生日蜡烛的时候，他的父亲陆永给他打了通电话：“宇恒啊。你现在在哪儿呢？”</p>
+<p>“什么事？我在家。”陆宇恒收起哭腔，疲惫地说。</p>
+<p>那头好久不吱声，于是陆宇恒耐心地再解释了一遍，“在重庆。”</p>
+<p>“我今天有工作，放不下，你就自己一个人过生日吧，好吧？”仿佛是敷衍他的漂亮话，因为每年自己的生日，他都是那样告诉自己的；而陆宇广的生日，他即便有公务缠身，也不曾缺席一次。</p>
+<p>“知道，你本来不也没给我庆祝过生日吗？我自己一个人会过。”陆宇恒冷笑一声，态度不是很好，“以后不用为这事给我打电话了。”</p>
+<p>陆永似乎没有察觉到陆宇恒的不满，严肃地说：“诶，那怎么能行呢？我让你妈去你家给你过生日了。你妈正好昨天带着你弟弟去了重庆，我已经打电话让她带着宇广去给你过生日了。”</p>
+<p>陆宇恒立刻警惕起来，他直起身子，语气和态度大变，“什么妈妈？她算什么东西也配做我妈妈？谁让他们来了？让他们走，你听见没有！”</p>
+<p>“什么？你说什么？你再说一遍！”那头的语气瞬间变得阴鸷，不像刚刚般慈爱，或者说，不像刚刚一般还需要故作慈爱。</p>
+<p>“我说你让他们滚！”陆宇恒正为苏岚兄弟的离开以及母亲的忌日而伤怀，听见那个女人要过来，气得胸口剧烈起伏，音调也抬高了不少。</p>
+<p>“你怎么说话呢？他们是你家人，你居然让家里人滚？”那头声音暴涨，对着话筒这头的陆宇恒厉声批评。</p>
+<p>“他们算什么东西，也配当我的家人？你赶紧让他们别来，否则，他们来了我也会让他们滚！”陆宇恒剧烈喘气，挂掉电话，无力地倒在软椅上。</p>
+<p>＜br&#x2F;＞</p>
+<p>半个钟头过去了，门铃声响起。陆宇恒大概知道会是谁，他没去理会，直到门铃声再次响起。</p>
+<p>本来打算装做不在家，但对讲机中得意的声音不停钻入他耳中：“宇恒，我是妈妈呀，哎呀，不要装不在家了，我都听你爸说了，你今晚在家过的生日！”</p>
+<p>陆宇恒抬头朝着对讲机大喊一声：“滚！”</p>
+<p>杨露就喜欢看他愤怒狂躁的样子，她得意地笑着说：“哈哈，你怎么还和以前一样暴脾气啊？你不开门就算了，我知道密码。”</p>
+<p>说着，杨露按下陆永告诉她的密码，打开门。</p>
+<p>杨露后面还跟着一群黑衣男人，门打开后，众人快步通过院内的水榭，走进屋内。</p>
+<p>杨露环视了一道屋子，看见陆宇恒后，朝身后的三个男人挥了挥手，四人一齐通过几道玄关，走进房子的餐厅。</p>
+<p>陆宇恒紧咬牙关，鼻息混乱。</p>
+<p>他暗暗心想，下次一定不能把密码再告诉那个偏心眼的父亲。</p>
+<p>杨露走进餐厅，看见桌子上摆了一个六寸的小蛋糕，讥讽般勾起唇角，嗤了一声，道：“哎呀，宇恒，你怎么吃这么小一块蛋糕啊？”</p>
+<p>说着，她让人搬走了那个蛋糕，将自己买的大蛋糕放到桌上。</p>
+<p>陆宇恒正准备拦下她，她就已经将他做了好久的蛋糕丢进垃圾桶。</p>
+<p>“你在干什么？”陆宇恒看着她笑意盈盈的脸，怒从心头起，恶向胆边生，冲上去揪住她的衣领。</p>
+<p>杨露并不慌乱，她知道陆宇恒暴躁的个性最好对付，她抬起手，朝着背后的男人挥了挥。</p>
+<p>那三个人了然地点了点头，随即冲上前，想要将陆宇恒扣下。</p>
+<p>陆宇恒恶狠狠地转头看向他们，鼻翼翕动，他咬着牙，放下手，挥拳和那三个人打了起来。</p>
+<p>＜br&#x2F;＞</p>
+<p>他虽然是练家子出身，那三个黑衣人也不是吃素的，何况他们人多势众，陆宇恒很快就败下阵来，被三人反手扣住。</p>
+<p>那几个男人顺着杨露的意思，揪着陆宇恒的头发，将他按到了椅子上，</p>
+<p>杨露微笑着从自己买的蛋糕上㧟了一大勺奶油，然后送到陆宇恒嘴边，笑意盈盈地说：“来，把这块蛋糕吃了吧，啊。”</p>
+<p>“滚开，不吃。”陆宇恒闭上眼睛，扭头道。</p>
+<p>“不吃？”杨露眨了两下眼睛，笑容逐渐凝滞，然后对旁边站着的一个男人使了个眼神。</p>
+<p>那人领会了杨露的意思，走到陆宇恒旁边，捏住他的下颌，将他的头扭着朝向杨露，用力之巨让陆宇恒疼得张开嘴。</p>
+<p>杨露便顺势将蛋糕塞进了他的嘴里。</p>
+<p>她微笑道：“好吃吗？”</p>
+<p>她明知陆宇恒现在牙关大开，无法说话，更无法吞咽，却还是这么问。</p>
+<p>陆宇恒嘴中塞满了蛋糕，不断发出呜咽的声音，眼神却依然狠戾。</p>
+<p>他的腿还是自由的，于是伸腿踢开那个精致的蛋糕。</p>
+<p>杨露笑道：“你这是敬酒不吃吃罚酒了？”</p>
+<p>杨露不露愠容地笑着，也懒得自己动手，只让身旁的黑衣男子将掉落在地上的蛋糕塞进陆宇恒嘴里：“喂他吃下。”</p>
+<p>那位黑衣男子点了点头，捡起地上的蛋糕，不停地往陆宇恒的嘴里塞。</p>
+<p>陆宇恒被不断塞进嘴里的食物填满了食道，嘴里不停干呕，妄图将食物呕出。</p>
+<p>“现在好好想想，你要不要吃？”杨露问。</p>
+<p>陆宇恒不屑地瞥了她一眼，心想他们不过仗着人多欺负人少，并没有服软，嗤了一声就别过头。</p>
+<p>见他不肯服软，杨露心里不高兴，于是继续吩咐黑衣保镖给他灌食。</p>
+<p>扣住陆宇恒右手的男人松懈了一会，陆宇恒敏锐地感到抓住自己右臂的力气小了一些，于是攥紧了拳头，挣开那人的束缚，抬起右手朝着给他的脸边揍了一拳。</p>
+<p>“你……”那个男人被这么打了一拳，心里不痛快，于是狠狠掐住陆宇恒的脖子，掐得他难以喘过气，整张脸被憋得通红。</p>
+<p>杨露见四人打得激烈，忍不住笑了出来。</p>
+<p>此时，外面冲进来一人，他朝着杨露的脸上打了一巴掌。</p>
+<p>杨露腹背受敌，怒而转头，嘴里夹杂着狂蔑之语：“你是谁啊？找死吗？”</p>
+<p>看见那人正是陆唐，杨露脸色略微松动了一点，对那几个抓住陆宇恒的人使了个眼神，他们乖乖散开。</p>
+<p>“你们撒野撒到这里来了？敢来这里欺负我侄子？”陆唐朝那几个男人的脸上各揍了一拳，然后将陆宇恒护到自己背后。</p>
+<p>“你怎么来了，陆唐？你不是在北京吗？”杨露问。</p>
+<p>“我不来，就让你们这么欺负我侄子吗？”陆唐警惕道，“是大哥让你来的？”</p>
+<p>“对啊，要不是你大哥千叮咛万嘱咐，你以为我想来受这气？”杨露揉了揉刚刚被陆唐打红了的脸，不屑地说。</p>
+<p>陆唐抬手指向门外，怒骂道：“不想来就赶紧滚！这里不欢迎你们！”</p>
+<p>杨露见陆唐愤怒的样子，反而换了一张温柔的笑脸，看起来却更加寒意沁脾，她笑道：“这怎么行？是你大哥让我来的，我也答应了要给陆宇恒过生日，我怎么能食言呢？”</p>
+<p>陆唐大骂道：“我会给他庆生，轮不到你这个人面兽心的女人越俎代庖！赶紧带着你的人滚，否则我立刻报警！”</p>
+<p>说着，他已经拿出手机。</p>
+<p>杨露冷笑道：“也没见你这么对过宇广，偏心偏到太平洋去了。”</p>
+<p>陆宇恒整张脸都胀得通红，他正不断干咳，咳出卡在食道里的食物。陆唐听声，连忙轻拍陆宇恒的背脊，替他顺气。</p>
+<p>见他气顺了，陆唐也松了口气，他握着陆宇恒的手臂，抬头警告对面一干人等：“宇恒也从来没这么对过你儿子吧？我警告你，你别以为你在我大哥面前得脸，就敢来我们家撒野！认清你自己的身份地位！不怕我报警的话，你们可以继续待在这里，要不然就马上滚！”</p>
+<p>“真是晦气，走吧，不识好人心啊。”见陆唐真的有拨通110的意思，杨露适时服软，她梨花带雨地哭着，走了出去。</p>
+<p>屋里的黑衣保镖也都面面相觑，然后跟了出去。</p>
+<p>＜br&#x2F;＞</p>
+<p>陆唐看着陆宇恒的脸，担心地问：“没事吧，宇恒？”</p>
+<p>陆宇恒抬头看着陆唐，“没事，叔叔。谢谢你来。”</p>
+<p>陆宇恒刚刚被那一干人羞辱，脸色正红，他暗自决定一定要那女人付出代价。</p>
+<p>陆唐叹了口气，将陆宇恒扶到外面沙发上坐下，给他倒了杯水，说：“这女人真的是越来越疯狂了，自从四年前生下宇广，她就越来越疯狂，越来越不择手段。”</p>
+<p>陆宇怒目圆睁，握着手中的水杯，盯着地面什么话也没说。</p>
+<p>“刚刚闹了那么一通，还没吃饭吧？”陆唐看陆宇恒眼睛憋得通红，心疼地替他擦掉眼泪，用布满老茧的拇指指腹给他抹开积在眼旁的泪水，温柔地说，“来，叔叔给你带了蛋糕，来吃点吧。”</p>
+<p>陆唐拿出蛋糕，切了一块，送到陆宇恒面前。</p>
+<p>“吃一块蛋糕吧。”陆唐举着盘子，慈蔼地笑着说。</p>
+<p>陆宇恒没有接过盘子，他问：“叔叔，你不是在北京吗？怎么突然来重庆了？”</p>
+<p>＜br&#x2F;＞</p>
+<p>“今天是你的生日，叔叔再忙也要来给你过生日啊。”</p>
+<p>看着叔叔温柔慈蔼的笑脸，陆宇恒的眼泪如泉涌般从眼中漫出，他抱着陆唐，感激道：“谢谢你，叔叔。”</p>
+<p>“吃吧，一家人不说两家话。”陆唐拿勺子㧟了一勺子蛋糕，送到他眼前。</p>
+<p>陆宇恒松开手，含着眼泪，吃下那一勺蛋糕，然后接过勺子，大口向嘴里塞蛋糕。</p>
+<p>“叔叔，这蛋糕真好吃……”说着，陆宇恒傻笑起来。</p>
+<p>他欣慰地想，至少还有叔叔，还好，他还不算完全孑然一身。</p>
+<p>陪着陆宇恒吃了两块蛋糕，陆唐叹了口气，站起身，“叔叔还有公事，就不陪你了，有机会再聚吧。”</p>
+<p>陆宇恒微笑着点头。</p>
+<p>陆唐走后，陆宇恒疲惫地倒在软椅上，盯着地面那一片狼籍。他暗自发誓，他一定要让杨露为今天的所作所为付出代价。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://nevereatsoldierlines.github.io/2023/06/12/chapter26/" data-id="cliyrjpdw00023nwyh4qsf6rl" data-title="第二十六章 生日？忌日？" class="article-share-link"><span class="fa fa-share">Share</span></a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
+
+
+  <nav id="page-nav">
+    
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/">Next &raquo;</a>
+  </nav>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+
+  
+    
+
+  
+    
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2023/06/">June 2023</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2023/06/18/chapter34/">第三十四章 角色扮演</a>
+          </li>
+        
+          <li>
+            <a href="/2023/06/18/chapter33/">第三十三章 鱼水之欢</a>
+          </li>
+        
+          <li>
+            <a href="/2023/06/18/chapter32/">第三十二章 一家团聚</a>
+          </li>
+        
+          <li>
+            <a href="/2023/06/18/chapter31/">第三十一章 奔赴而来</a>
+          </li>
+        
+          <li>
+            <a href="/2023/06/18/chapter30/">第三十章 身安不如心安</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2023 SUNHAT<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
 
     </div>
-    <script src="/js/jquery-3.6.4.min.js"></script>
-    <script src="/fancybox/jquery.fancybox.min.js"></script>
-    <script src="/js/script.js"></script>
-</div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
 
 <script src="/js/jquery-3.6.4.min.js"></script>
 
 
+
+  
 <script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
 
 
 <script src="/js/script.js"></script>
 
 
-</div>
+
+
+
+  </div>
 </body>
 </html>
